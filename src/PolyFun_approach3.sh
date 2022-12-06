@@ -3,7 +3,7 @@
 #PBS -N pre_processing_Polyfun
 #PBS -j oe
 #PBS -o pre_procesing_Polyfun
-#PBS -l walltime=12:0:0
+#PBS -l walltime=15:0:0
 #PBS -l vmem=50gb
 #PBS -l nodes=1:ppn=1
 #PBS -d .
@@ -14,21 +14,48 @@
 #awk '{print $1}' /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
 #    > /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/input/rsid_maf001_broad_pheno_1_5_ratio_betase_input_mungestat
 
+#create the in-sample dosage LD file using ldstore2:
 chr=$PBS_ARRAYID
-module load plink2
-plink2 \
-    --bgen /data/ukb/nobackup/imputed_v3/ukb_imp_chr${chr}_v3.bgen \
-    ref-first --sample /data/gen1/UKBiobank_500K/severe_asthma/data/ukbiobank_app56607_for_regenie.sample \
-    --keep /data/gen1/UKBiobank_500K/severe_asthma/Noemi_PhD/data/broadasthma_individuals \
-    --export bgen-1.2 --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3
+#module load plink2
+#plink2 \
+#    --bgen /data/ukb/nobackup/imputed_v3/ukb_imp_chr${chr}_v3.bgen \
+#    ref-first --sample /data/gen1/UKBiobank_500K/severe_asthma/data/ukbiobank_app56607_for_regenie.sample \
+#    --keep /data/gen1/UKBiobank_500K/severe_asthma/Noemi_PhD/data/broadasthma_individuals \
+#    --export bgen-1.2 --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3
 
+#create the input files for ldstorev2:
+#sample:
+#awk '{print $1, $2, $3}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3.sample \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3_bcor.sample
+#bgen.bgi:
+#/home/n/nnp5/software/bgen.tgz/build/apps/bgenix -index -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3
+#snp${chr}.z:
+#/home/n/nnp5/software/bgen.tgz/build/apps/bgenix \
+#    -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3.bgen \
+#    -list > /scratch/gen1/nnp5/Fine_mapping/tmp_data/tmp_snp_chr${chr}.z
+#grep -v "#" /scratch/gen1/nnp5/Fine_mapping/tmp_data/tmp_snp_chr${chr}.z | awk -F " " '{print $2, $3, $4, $6, $7}' OFS=" " | tail -n +2 | sed -e '1i\rsid chromosome position allele1 allele2' \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/snp_chr${chr}.z
+#master:
+#echo "z;bgen;bgi;sample;bdose;bcor;ld;n_samples" > /scratch/gen1/nnp5/Fine_mapping/tmp_data/tmp_master_chr${chr}
+#echo "/scratch/gen1/nnp5/Fine_mapping/tmp_data/snp_chr${chr}.z;/scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3.bgen;/scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3.bgen.bgi;/scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr${chr}_v3_bcor.sample;/scratch/gen1/nnp5/Fine_mapping/tmp_data/chr${chr}.bdose;/scratch/gen1/nnp5/Fine_mapping/tmp_data/chr${chr}.bcor;/scratch/gen1/nnp5/Fine_mapping/tmp_data/chr${chr}.ld;46086" | \
+#    cat /scratch/gen1/nnp5/Fine_mapping/tmp_data/tmp_master_chr${chr} - \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/master_chr${chr}
+
+#ldstore2 bgen to bdose v1.1 conversion:
+/home/n/nnp5/software/ldstore_v2.0_x86_64/ldstore_v2.0_x86_64 \
+    --in-files /scratch/gen1/nnp5/Fine_mapping/tmp_data/master_chr${chr} \
+    --write-bdose --bdose-version 1.1
+
+#ldstore2 SNPs correlation:
 #/home/n/nnp5/software/ldstore_v2.0_x86_64/ldstore_v2.0_x86_64 \
-#    --in-files /scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr3_v3 \
+#    --in-files /scratch/gen1/nnp5/Fine_mapping/tmp_data/master_chr${chr} \
 #    --write-bcor \
+#    --bdose-version 1.1 \
 #    --read-only-bgen \
 #    --rsids /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/input/rsid_maf001_broad_pheno_1_5_ratio_betase_input_mungestat
 
-#Computing LD-scores with your own pre-computed LD matrices
+
+#Computing LD-scores for annotations with your own pre-computed LD matrices
 #python compute_ldscores_from_ld.py \
 #  --annot /scratch/gen1/nnp5/Fine_mapping/tmp_data/baselineLF2.2.UKB/baselineLF2.2.UKB.3.annot.parquet \
 #  --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/ldscores_SA_EUR_maf001_chr3.parquet \
