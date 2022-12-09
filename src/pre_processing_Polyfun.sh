@@ -23,26 +23,43 @@ Rscript src/pre_processing_Polyfun.R \
     ${PHENO}
 
 #iterative:
-cd /home/n/nnp5/software/polyfun
 conda activate polyfun
 
 #Step1. Create a munged summary statistics file in a PolyFun-friendly parquet format.
 cut -d ' ' -f -11 /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
-    > maf001_broad_pheno_1_5_ratio_betase_input_mungestat
+    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_betase_input_mungestat
 module load python/gcc/3.9.10
-python munge_polyfun_sumstats.py \
-  --sumstats maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
+python /home/n/nnp5/software/polyfun/munge_polyfun_sumstats.py \
+  --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
   --n 46086 \
-  --out maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet \
-  --min-info 0.9 \
+  --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet \
+  --min-info 0.85 \
   --min-maf 0.01
 
 #Approach 1 (UK Biobank pre-computed prior causal probabilities); no information for HLA region !
 ##Extract pre-computed prior causal probabilities in UK Biobank - White British:
-python extract_snpvar.py \
-    --sumstats maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet \
+python /home/n/nnp5/software/polyfun/extract_snpvar.py \
+    --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet \
     --allow-missing \
-    --out SNPs_PriCauPro
+    --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/SNPs_PriCauPro
+
+#Manually retrieve the prior in python:
+#import pandas as pd
+#sumstat = pd.read_parquet("/scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet")
+#polyfun_snp2=pd.read_parquet("/home/n/nnp5/software/polyfun/snpvar_meta.chr1_7.parquet")
+#polyfun_snp2=pd.read_parquet("/home/n/nnp5/software/polyfun/snpvar_meta.chr8_22.parquet")
+#df = pd.merge(sumstat, polyfun_snp, how='inner', on = 'SNP')
+#df2 = pd.merge(sumstat, polyfun_snp2, how='inner', on = 'SNP')
+#result = pd.concat(frames)
+#result = pd.concat(frames)
+#frames = [df, df2]
+#result['Z'].where(~(result['A1_x'] == result['A2_y']), other=-result['Z'], inplace=True)
+#result_clean = result[["CHR_y", "BP_y", "SNP", "A1_y", "A2_y", "MAF", "N", "Z", "snpvar_bin"]]
+#result_clean.columns = ['CHR','BP','SNP','A1','A2','MAF','N','Z','SNPVAR']
+#nodup_result_clean = result_clean.sort_values('SNP').drop_duplicates(subset=['CHR', 'BP'], keep='first')
+#nodup_result_clean.to_parquet("/scratch/gen1/nnp5/Fine_mapping/tmp_data/SNP_prior_manual.parquet")
+
+
 ##Run the FIFO with SuSiE:
 #OptionB.Fine-mapping with SuSiE, using pre-computed summary LD information from the UK Biobank
 #download an LD matrix
@@ -138,22 +155,22 @@ cd /home/n/nnp5/software/polyfun
 #"17" "37573838" "38573838"
 #"chr17_37000001_40000001"
 
-chrstartend=("15" "66942596" "67942596")
-ldref="chr15_66000001_69000001"
+chrstartend=("2" "102426362" "103426362")
+ldref="chr2_102000001_105000001"
 ######
 chr=${chrstartend[0]}
 start=${chrstartend[1]}
 end=${chrstartend[2]}
 #Download the  the --ld option file from
-python finemapper.py \
+python /home/n/nnp5/software/polyfun/finemapper.py \
     --ld /scratch/gen1/nnp5/Fine_mapping/tmp_data/LD_temp/$ldref \
-    --sumstats sumstat_SNPVAR_manual.parquet \
+    --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/SNP_prior_manual.parquet \
     --n 46086 \
     --chr $chr \
     --start $start \
     --end $end \
     --method susie \
-    --max-num-causal 5 \
+    --max-num-causal 10 \
     --allow-missing \
     --out /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap.UKB.$chr.$start.$end.gz
 #Approach 1 works with LDmatrix from UKBiobank, but I miss some variants among which the sentinel on chromosome 3. So I am trying to use Option 3.
