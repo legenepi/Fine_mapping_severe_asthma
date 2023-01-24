@@ -9,7 +9,7 @@
 #PBS -d .
 #PBS -W umask=022
 
-PATH="/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma"
+PATH_finemapping="/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma"
 PHENO="broad_pheno_1_5_ratio"
 PATH_ASSOC="/home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/allchr"
 
@@ -25,10 +25,10 @@ Rscript src/pre_processing_Polyfun.R \
 #iterative:
 module load python/gcc/3.9.10
 conda activate polyfun
-#install parquet-tools to read parwuet file in bash: python3 -m pip install parquet-tools
+#install parquet-tools to read parquet file in bash: python3 -m pip install parquet-tools
 
 #Step1. Create a munged summary statistics file in a PolyFun-friendly parquet format.
-cut -d ' ' -f -11 /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
+cut -d ' ' -f -11 ${PATH_finemapping}/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
     > /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_betase_input_mungestat
 python /home/n/nnp5/software/polyfun/munge_polyfun_sumstats.py \
   --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
@@ -116,7 +116,7 @@ wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr11_75000001_78000001.
 wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr12_55000001_58000001.gz
 wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr12_55000001_58000001.npz
 #chr12 "12" "56993727" "57993727"
-#as above
+#same files of (chr12 "12" "55935504" "56935504")
 #chr15 "15" "66942596" "67942596"
 wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr15_69000001_72000001.gz
 wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr15_69000001_72000001.npz
@@ -149,7 +149,7 @@ cd /home/n/nnp5/software/polyfun
 #chr8_80000001_83000001
 #9 5709697 6709697
 #chr9_5000001_8000001
-#10 8542744 9542744
+#10 8549253 9549253 #done on the second top snp rs12413578 GRCh37 9049253
 #chr10_8000001_11000001
 #11 75796671 76796671
 #chr11_75000001_78000001
@@ -162,22 +162,16 @@ cd /home/n/nnp5/software/polyfun
 #17 37573838 38573838
 #chr17_37000001_40000001
 
-# Check which variant are not used in the fine-mapping among the one in my summary stats. Does this affect my fine-mapping
-##results?
 touch /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
 
 #need to change these two index for each sentinel:
-chr_row=31
-ldref_row=32
+chr_row=33
+ldref_row=34
 
 chr=$(awk -v row=$chr_row 'NR == row {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 start=$(awk -v row=$chr_row 'NR == row {print $2}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 end=$(awk -v row=$chr_row 'NR == row {print $3}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 ldref=$(awk -v row_2=$ldref_row 'NR == row_2 {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
-
-awk -F "\t" -v CHR="$chr" '$3 == CHR {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/missed_SNP_prior_manual.txt | \
-    awk -F "\t" -v START_POS="$start" '$4 >= START_POS {print}' | awk -F "\t" -v END_POS="$end" '$4 <= END_POS {print}' \
-    >> /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
 
 #Download the  the --ld option file from
 python /home/n/nnp5/software/polyfun/finemapper.py \
@@ -190,4 +184,10 @@ python /home/n/nnp5/software/polyfun/finemapper.py \
     --method susie \
     --max-num-causal 10 \
     --allow-missing \
-    --out /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/manual_finemap.UKB.$chr.$start.$end.gz
+    --out ${PATH_finemapping}/output/manual_finemap.UKB.$chr.$start.$end.gz
+
+# Check which variant are not used in the fine-mapping among the one in my summary stats. Does this affect my fine-mapping
+##results?
+awk -F "\t" -v CHR="$chr" '$3 == CHR {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/missed_SNP_prior_manual.txt | \
+    awk -F "\t" -v START_POS="$start" '$4 >= START_POS {print}' | awk -F "\t" -v END_POS="$end" '$4 <= END_POS {print}' \
+    >> /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
