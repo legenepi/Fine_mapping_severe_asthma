@@ -118,8 +118,8 @@ wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr12_55000001_58000001.
 #chr12 "12" "56993727" "57993727"
 #same files of (chr12 "12" "55935504" "56935504")
 #chr15 "15" "66942596" "67942596"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr15_69000001_72000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr15_69000001_72000001.npz
+wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr15_66000001_69000001.gz
+wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr15_66000001_69000001.npz
 #chr17 "17" "37573838" "38573838"
 wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr17_37000001_40000001.gz
 wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr17_37000001_40000001.npz
@@ -158,15 +158,15 @@ cd /home/n/nnp5/software/polyfun
 #12 56993727 57993727
 #chr12_55000001_58000001
 #15 66942596 67942596
-#chr15_69000001_72000001
+#chr15_66000001_69000001
 #17 37573838 38573838
 #chr17_37000001_40000001
 
 touch /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
 
 #need to change these two index for each sentinel:
-chr_row=33
-ldref_row=34
+chr_row=31
+ldref_row=32
 
 chr=$(awk -v row=$chr_row 'NR == row {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 start=$(awk -v row=$chr_row 'NR == row {print $2}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
