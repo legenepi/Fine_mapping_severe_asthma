@@ -38,13 +38,13 @@ python /home/n/nnp5/software/polyfun/munge_polyfun_sumstats.py \
   --min-maf 0.01
 
 #Approach 1 (UK Biobank pre-computed prior causal probabilities); no information for HLA region !
-##Extract pre-computed prior causal probabilities in UK Biobank - White British:
+##A.Extract pre-computed prior causal probabilities in UK Biobank - White British:
 python /home/n/nnp5/software/polyfun/extract_snpvar.py \
     --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet \
     --allow-missing \
     --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/SNPs_PriCauPro
 
-#Manually retrieve the prior in python:
+##B.Manually retrieve the prior in python:
 import pandas as pd
 sumstat = pd.read_parquet("/scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet")
 polyfun_snp=pd.read_parquet("/home/n/nnp5/software/polyfun/snpvar_meta.chr1_7.parquet")
@@ -68,7 +68,7 @@ anti_join.to_csv("/scratch/gen1/nnp5/Fine_mapping/tmp_data/missed_SNP_prior_manu
 
 
 ##Run the FIFO with SuSiE:
-#OptionB.Fine-mapping with SuSiE, using pre-computed summary LD information from the UK Biobank
+#Fine-mapping with SuSiE, using pre-computed summary LD information from the UK Biobank
 #download an LD matrix
 mkdir -p LD_cache
 mkdir output
@@ -165,15 +165,15 @@ cd /home/n/nnp5/software/polyfun
 touch /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
 
 #need to change these two index for each sentinel:
-chr_row=31
-ldref_row=32
+chr_row=13
+ldref_row=14
 
 chr=$(awk -v row=$chr_row 'NR == row {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 start=$(awk -v row=$chr_row 'NR == row {print $2}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 end=$(awk -v row=$chr_row 'NR == row {print $3}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 ldref=$(awk -v row_2=$ldref_row 'NR == row_2 {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 
-#Download the  the --ld option file from
+#Run the actual FIFO:
 python /home/n/nnp5/software/polyfun/finemapper.py \
     --ld /scratch/gen1/nnp5/Fine_mapping/tmp_data/LD_temp/$ldref \
     --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/SNP_prior_manual.parquet \
