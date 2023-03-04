@@ -165,8 +165,8 @@ cd /home/n/nnp5/software/polyfun
 touch /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
 
 #need to change these two index for each sentinel:
-chr_row=13
-ldref_row=14
+chr_row=5
+ldref_row=6
 
 chr=$(awk -v row=$chr_row 'NR == row {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 start=$(awk -v row=$chr_row 'NR == row {print $2}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)

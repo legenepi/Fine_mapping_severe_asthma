@@ -41,6 +41,10 @@ df_sumstats = df_sumstats[["CHR", "BP", "SNP", "A1", "A2", "MAF", "N", "Z"]]
 df_sumstats['SNPVAR'] = 0
 df_sumstats.to_parquet("/scratch/gen1/nnp5/Fine_mapping/tmp_data/SNP_NOprior_manual.parquet")
 
+df_sumstats.to_csv("/scratch/gen1/nnp5/Fine_mapping/tmp_data/GWAS_zscore.txt", index=None, sep=' ')
+
 #Z-score is calculated, but I have opposite sign compared to Z-score calculated by PolyFun. Need to understand why !!
 #For now, I put '0-' to have the same sign, but I do not know why...
+#I talked to Olivia and Richard. They said that the sign shouldnt affect the results.
+#Try with the zscore absolute value and see if I get the same results
 

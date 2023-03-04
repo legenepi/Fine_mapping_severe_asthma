@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+#PBS -N susie
+#PBS -l walltime=08:00:00
+#PBS -l vmem=60g
+#PBS -l nodes=1:ppn=1
+#PBS -m bea
+#PBS -M kaf19@le.ac.uk
+
+
+chr=$PBS_ARRAYID
+# change directory
+cd /data/gen1/UKBiobank_500K/asthma_exacerbations/susie_example
+
+# load modules
+module load R
+
+# command
+Rscript susie.R rs34643691_cols_no_header.raw rs34643691_z_scores.txt rs34643691_susie.jpeg

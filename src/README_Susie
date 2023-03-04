@@ -1,0 +1,27 @@
+#For susie analyses, the following steps were taken:
+#Using asthma exacerbation locus (rs34643691 as an example)
+#Important note: this was using application 648
+
+module load plink2
+module load R
+
+#Initial association analysis in region:
+#Either use a regional bgen file as input or specify a window in the plink command
+
+#Creating region bgen
+~nrgs1/bin/bgenix -g /data/ukb/nobackup/imputed_v3/ukb_imp_chr15_v3.bgen -incl-range 15:87874252-88874252 > rs34643691.bgen
+
+#Exclude multi-allelic variants
+
+grep -v -F -f /data/gen1/UKBiobank_500K/imputed/multiallelic.snps  > rs34643691_snps_no_ma.txt
+
+#Format region data for input to R
+
+plink2 --bgen rs34643691.bgen ref-first --sample /rfs/TobinGroup/data/UKBiobank/application_648/ukb648_imp_chr1_v3_s487371.sample --export A --extract rs34643691_snps_no_ma.txt --out rs34643691
+
+cut -f7- rs34643691.raw > rs34643691_cols.raw
+
+awk 'NR>1 {print}' rs34643691_cols.raw > rs34643691_cols_no_header.raw
+
+
+#Run susie.R (see job submission script job_susie)
