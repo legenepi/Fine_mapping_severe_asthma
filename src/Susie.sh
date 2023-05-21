@@ -18,39 +18,17 @@ module load R/4.1.0
 module load plink2
 
 #Input data:
-chr_row=1
-for line in {2..18}
+for line in {2..14}
 do
-SNP=$(awk -v row="$line" -F "\t" ' NR == row {print $1 } ' /home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/maf001_broad_pheno_1_5_ratio_sentinel_variants.txt)
-chr=$(awk -v row="$line" -F "\t" ' NR == row {print $2 } ' /home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/maf001_broad_pheno_1_5_ratio_sentinel_variants.txt)
-
-start=$(awk -v row=$chr_row 'NR == row {print $2}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
-end=$(awk -v row=$chr_row 'NR == row {print $3}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
-chr_row=$((chr_row + 2))
-
-#I already have plink files for each regions:
-#to create plink files with my GWAS participants:
-#qsub /home/n/nnp5/PhD/PhD_project/Post_GWAS/plink_conversion_files.sh
-#to extract plink file or regions +/- 1000Kb from the sentinel variants.
-module load plink
-plink \
-    --bfile /scratch/gen1/nnp5/REGENIE_assoc/tmp_data/${pheno}_plink_file_v3_chr${chr} \
-    --snp ${SNP} \
-    --window 1000 \
-    --make-bed --out /scratch/gen1/nnp5/REGENIE_assoc/tmp_data/${pheno}_plink_file_v3_chr${chr}_${SNP}
-
-#Retrieve z-scores for variants in the region:
-#to calculate zscores:
-#applied filters #filters: --min-info 0.85 --min-maf 0.01
-#python ${PATH_finemapping}/src/Input_noprior_parquet.py \
-#    ${PATH_finemapping}/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat
-
-
+SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
+chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
+start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
+end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 
 #Creating region bgen
-~nrgs1/bin/bgenix -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/severeasthma_EUR_ukb_imp_chr3_v3.bgen \
-    -incl-range ${chr}:${start}-${end} \
-    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
+cd /scratch/gen1/nnp5/Fine_mapping/tmp_data/
+~nrgs1/bin/bgenix -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen -incl-range 0$chr:$start-$end > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
+cd ${PATH_finemapping}
 
 #Exclude multi-allelic variants and find the common SNP IDs for the genotyped matrix and the zscore input files:
 #use the file for each regions created by FINEMAP.sh:

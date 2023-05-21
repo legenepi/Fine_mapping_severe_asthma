@@ -1,0 +1,63 @@
+---
+title: "Fine mapping analysis of sentinel variants for severe asthma study"
+author: "Noemi Nicole Piga"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    code_folding: "hide"
+    toc: true
+    toc_float: true
+    theme: united
+---
+
+```{r, setup, hide = TRUE}
+#library reticulate to be able to add chunks in another language
+library(reticulate)
+#To run this .rmd file in a terminal being in the project folder:
+#export PATH=${PATH}:/cm/shared/apps/R/deps/rstudio/bin/pandoc
+#file="./report/Fine_mapping.Rmd"
+#module unload R/4.2.1
+#module load R/4.1.0
+#Rscript -e 'rmarkdown::render("'$file'")'
+```
+
+
+# Rationale
+Fine mapping of sentinel variants discovered in the severe asthma GWAS on UK Biobank European dataset.
+
+# Analysis
+Code: Post_GWAS/src/Susie.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/Susie.sh'), eval=FALSE}
+```
+Code: Post_GWAS/src/susie.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/susie.R'), eval=FALSE}
+```
+Code: Post_GWAS/src/FINEMAP.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/FINEMAP.sh'), eval=FALSE}
+```
+Code: Post_GWAS/src/pre_processing_Polyfun.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/pre_processing_Polyfun.sh'), eval=FALSE}
+```
+Code: Post_GWAS/src/pre_processing_Polyfun.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/pre_processing_Polyfun.R'), eval=FALSE}
+```
+Code: Post_GWAS/src/PolyFun_approach3.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/PolyFun_approach3.sh'), eval=FALSE}
+```
+
+Four different fine-mapping tools were implemented, more precisely: I tested and compared the results for Susie [1] and FINEMAP [2] tools with and without functional information given as a prior for the model. For the funcitonal informed fine-mapping, I used the PolyFUN tool [3].
+
+
+# Results
+
+# Conclusion
+
+# References
+
+
+# Notes
+
+Add image:
+```{r, out.width='100%', out.height='200%', fig.align='center', fig.cap='Fig 5', echo = FALSE, eval=FALSE}
+knitr::include_graphics('')
+```
