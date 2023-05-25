@@ -3,7 +3,7 @@
 #PBS -N SuSie
 #PBS -j oe
 #PBS -o SuSie
-#PBS -l walltime=1:0:0
+#PBS -l walltime=4:0:0
 #PBS -l vmem=50gb
 #PBS -l nodes=1:ppn=1
 #PBS -d .
@@ -12,13 +12,15 @@
 PATH_finemapping="/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma"
 PATH_ASSOC="/home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/allchr"
 
+cd ${PATH_finemapping}
+
 module load gcc/9.3
 module unload R/4.2.1
 module load R/4.1.0
 module load plink2
 
 #Input data:
-for line in {2..14}
+for line in {2..15}
 do
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
@@ -27,7 +29,7 @@ end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_m
 
 #Creating region bgen
 cd /scratch/gen1/nnp5/Fine_mapping/tmp_data/
-~nrgs1/bin/bgenix -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen -incl-range 0$chr:$start-$end > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
+~nrgs1/bin/bgenix -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen -incl-range ${chr}:${start}-${end} > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
 cd ${PATH_finemapping}
 
 #Exclude multi-allelic variants and find the common SNP IDs for the genotyped matrix and the zscore input files:
@@ -61,31 +63,29 @@ awk 'NR>1 {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols.raw \
 Rscript src/susie.R \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_z_scores.txt \
-    ${PATH_finemapping}/output/susie_${chr}_${SNP}.txt \
-    ${PATH_finemapping}/output/susie_${chr}_${SNP}.jpeg
+    ${PATH_finemapping}/output/susie_${chr}_${SNP}_${start}_${end}.txt \
+    ${PATH_finemapping}/output/susie_${chr}_${SNP}_${start}_${end}.jpeg
 
 done
 
 
 
 #post analysis: Found the credible set variants as per susie:
-awk 'NR <= 2 {print $8}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | tr , '\n' | tail -n +2 \
-    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_index.txt
+#awk 'NR <= 2 {print $8}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | tr , '\n' | tail -n +2 \
+#    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_index.txt
 
-awk '{print $1, $2, $3, $4, $5, $6, $7}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | \
-    grep -w -F -f ${PATH_finemapping}/output/susie_3_rs778801698_cs_index.txt - \
-    > ${PATH_finemapping}/output/susie_3_rs778801698.txt.digest
-
-
-awk 'NR <= 2 {print $8}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | tr , '\n' | tail -n +2 | awk '{print $1+1}' \
-    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_index2.txt
-
-awk '{print NR,$1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | \
-    grep -w -F -f ${PATH_finemapping}/output/susie_3_rs778801698_cs_index2.txt - | awk '{print $2}' | \
-    grep -w -F -f - /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | awk '{print $1}' \
-    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_snps.txt
+#awk '{print $1, $2, $3, $4, $5, $6, $7}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | \
+#    grep -w -F -f ${PATH_finemapping}/output/susie_3_rs778801698_cs_index.txt - \
+#    > ${PATH_finemapping}/output/susie_3_rs778801698.txt.digest
 
 
+#awk 'NR <= 2 {print $8}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | tr , '\n' | tail -n +2 | awk '{print $1+1}' \
+#    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_index2.txt
+
+#awk '{print NR,$1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | \
+#    grep -w -F -f ${PATH_finemapping}/output/susie_3_rs778801698_cs_index2.txt - | awk '{print $2}' | \
+#    grep -w -F -f - /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | awk '{print $1}' \
+#    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_snps.txt
 
 
 
@@ -102,10 +102,12 @@ awk '{print NR,$1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_s
 
 
 
-#if there is some NAs in the genotype matrix (but I shouldnt need it now)
-awk '{ lines[NR] = $0; for (i = 1; i <= NF; i++) if ($i == "NA") skip[i] = 1;} END { for (i = 1; i <= NR; i++) {
-    nf = split(lines[i], fields);
-    for (j = 1; j <= nf; j++) if (!(j in skip)) printf("%s ", fields[j]);
-    printf("\n");
-    }
-    }' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw  > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header_noNA.raw
+
+
+#if there is some NAs in the genotype matrix (keep it because it is a nice script)
+#awk '{ lines[NR] = $0; for (i = 1; i <= NF; i++) if ($i == "NA") skip[i] = 1;} END { for (i = 1; i <= NR; i++) {
+#    nf = split(lines[i], fields);
+#    for (j = 1; j <= nf; j++) if (!(j in skip)) printf("%s ", fields[j]);
+#    printf("\n");
+#    }
+#    }' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw  > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header_noNA.raw

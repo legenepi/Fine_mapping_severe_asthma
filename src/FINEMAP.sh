@@ -3,7 +3,7 @@
 #PBS -N FINEMAP
 #PBS -j oe
 #PBS -o FINEMAP
-#PBS -l walltime=2:0:0
+#PBS -l walltime=4:0:0
 #PBS -l vmem=50gb
 #PBS -l nodes=1:ppn=1
 #PBS -d .
@@ -17,11 +17,9 @@ module unload R/4.2.1
 module load R/4.1.0
 module load plink2
 
-##data.bgen:
-qsub -t 1-22 ${PATH_finemapping}/src/bgenix_index.sh
+##data.bgen and data.bgen.bgi:
+#qsub -t 1-22 ${PATH_finemapping}/src/bgenix_index.sh
 
-##data.bgen.bgi:
-/scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr2_v3.bgen.bgi
 
 ##data.sample:
 grep -w -F -f /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_individuals \
@@ -65,7 +63,7 @@ awk {'print $1'} /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_indivi
 
 ##data.z:
 #rsid chromosome position allele1 allele2
-for line in {2..14}
+for line in {2..15}
 do
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
@@ -77,7 +75,7 @@ awk -v chr_idx=$chr 'NR==1; NR > 1 {if ($2 == chr_idx) print}'  ${PATH_finemappi
     awk -v END_POS="$end" 'NR==1; NR > 1 {if ($3 <= END_POS) print}' \
     > ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.z
 
-#master file:
+#master file for ldstore2:
 echo "z;bgen;bgi;sample;bdose;bcor;ld;n_samples;incl" > ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.data
 echo "input/ldstore_chr${chr}_${SNP}.z;/scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen;/scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen.bgi;input/ldstore.sample;input/ldstore_chr${chr}_${SNP}.bdose;input/ldstore_chr${chr}_${SNP}.bcor;input/ldstore_chr${chr}_${SNP}.ld;46086;input/ldstore.incl" \
     >> ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.data
@@ -89,11 +87,11 @@ echo "input/ldstore_chr${chr}_${SNP}.z;/scratch/gen1/nnp5/Fine_mapping/tmp_data/
     --write-bdose \
     --bdose-version 1.1
 
-#master file: semicolon-delimiter text file:
+#master file for FINEMAP: semicolon-delimiter text file:
 # #NB:The order of the SNPs in the dataset.ld must correspond to the order of SNPs in dataset.z.
 cd ${PATH_finemapping}
 echo "z;bcor;snp;config;cred;log;n_samples" > ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
-echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;output/finemap_${chr}_${SNP}.snp;output/finemap_${chr}_${SNP}.config;output/finemap_${chr}_${SNP}.cred;output/finemap_${chr}_${SNP}.log;46086" \
+echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;output/finemap_${chr}_${SNP}_${start}_${end}.snp;output/finemap_${chr}_${SNP}_${start}_${end}.config;output/finemap_${chr}_${SNP}_${start}_${end}.cred;output/finemap_${chr}_${SNP}_${start}_${end}.log;46086" \
     >> ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
 
 
@@ -107,8 +105,8 @@ echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;outpu
 done
 
 #post analysis: Find the credible set variants as per FINEMAP:
-grep -v "^#"  /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_*_plink.cred1 \
-    > /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_plink.cred1.digest
+#grep -v "^#"  /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_*_plink.cred1 \
+#    > /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_plink.cred1.digest
 
 
 #six columns interpreted as SNPID, rsid, chromosome, position, first and second alleles.
