@@ -26,26 +26,38 @@ library(reticulate)
 Fine mapping of sentinel variants discovered in the severe asthma GWAS on UK Biobank European dataset.
 
 # Analysis
-Code: Post_GWAS/src/Susie.sh
-```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/Susie.sh'), eval=FALSE}
+Code: Fine_mapping_severe_asthma/src/create_fine_mapping_regions_merged.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/create_fine_mapping_regions_merged.sh'), eval=FALSE}
 ```
-Code: Post_GWAS/src/susie.R
-```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/susie.R'), eval=FALSE}
+Code: Fine_mapping_severe_asthma/src/bgenix_index.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/bgenix_index.sh'), eval=FALSE}
 ```
-Code: Post_GWAS/src/FINEMAP.sh
+Code: Fine_mapping_severe_asthma/src/FINEMAP.sh
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/FINEMAP.sh'), eval=FALSE}
 ```
-Code: Post_GWAS/src/pre_processing_Polyfun.sh
+Code: Fine_mapping_severe_asthma/finemap_plot.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemap_plot.R'), eval=FALSE}
+```
+Code: Fine_mapping_severe_asthma/src/Susie.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/Susie.sh'), eval=FALSE}
+```
+Code: Fine_mapping_severe_asthma/src/susie.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/susie.R'), eval=FALSE}
+```
+Code: Fine_mapping_severe_asthma/src/z_score.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/z_score.R'), eval=FALSE}
+```
+Code: Fine_mapping_severe_asthma/src/pre_processing_Polyfun.sh
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/pre_processing_Polyfun.sh'), eval=FALSE}
 ```
-Code: Post_GWAS/src/pre_processing_Polyfun.R
+Code: Fine_mapping_severe_asthma/src/pre_processing_Polyfun.R
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/pre_processing_Polyfun.R'), eval=FALSE}
 ```
-Code: Post_GWAS/src/PolyFun_approach3.sh
+Code: Fine_mapping_severe_asthma/src/PolyFun_approach3.sh
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/PolyFun_approach3.sh'), eval=FALSE}
 ```
 
-Four different fine-mapping tools were implemented, more precisely: I tested and compared the results for Susie [1] and FINEMAP [2] tools with and without functional information given as a prior for the model. For the funcitonal informed fine-mapping, I used the PolyFUN tool [3].
+Four different fine-mapping tools were implemented, more precisely: I tested and compared the results for Susie [1] and FINEMAP [2] tools with and without functional information given as a prior for the model. For the functional informed fine-mapping, I used the PolyFUN tool [3].
 
 
 # Results

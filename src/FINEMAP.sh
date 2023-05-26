@@ -63,6 +63,7 @@ awk {'print $1'} /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_indivi
 
 ##data.z:
 #rsid chromosome position allele1 allele2
+#input/fine_mapping_regions_merged from create_fine_mapping_merged.sh
 for line in {2..15}
 do
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
@@ -105,8 +106,41 @@ echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;outpu
 done
 
 #post analysis: Find the credible set variants as per FINEMAP:
-#grep -v "^#"  /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_*_plink.cred1 \
-#    > /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_plink.cred1.digest
+#grep -v "^#"  /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_*.cred1 \
+#    > /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap.cred1.digest
 
 
 #six columns interpreted as SNPID, rsid, chromosome, position, first and second alleles.
+
+#Plot in R to compare GWAS p-value and fine-mapping PIP:
+#from this website: https://www.mv.helsinki.fi/home/mjxpirin/GWAS_course/material/GWAS7.html
+locus="3_rs778801698_49024027_51024027"
+Rscript src/finemap_plot.R $locus
+locus="2_rs12470864_101926362_103926362"
+Rscript src/finemap_plot.R $locus
+locus="2_rs6761047_241692858_243692858"
+Rscript src/finemap_plot.R $locus
+locus="5_rs1837253_109401872_111401872"
+Rscript src/finemap_plot.R $locus
+locus="5_rs2188962_rs152815_130026218_132770805"
+Rscript src/finemap_plot.R $locus
+locus="6_rs9271365_rs2523572_rs6462_31006597_33586794"
+Rscript src/finemap_plot.R $locus
+locus="8_rs7824394_80292599_82292599"
+Rscript src/finemap_plot.R $locus
+locus="9_rs992969_5209697_7209697"
+Rscript src/finemap_plot.R $locus
+locus="10_rs201499805_8042744_10042744"
+Rscript src/finemap_plot.R $locus
+locus="11_rs10160518_75296671_77296671"
+Rscript src/finemap_plot.R $locus
+locus="12_rs705705_rs3024971_55435504_58493727"
+Rscript src/finemap_plot.R $locus
+locus="15_rs17293632_66442596_68442596"
+Rscript src/finemap_plot.R $locus
+locus="17_17:38073838_CCG_C_37073838_39073838"
+Rscript src/finemap_plot.R $locus
+
+
+
+
