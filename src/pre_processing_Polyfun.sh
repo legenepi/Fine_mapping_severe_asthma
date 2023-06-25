@@ -12,10 +12,12 @@
 PATH_finemapping="/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma"
 PHENO="broad_pheno_1_5_ratio"
 PATH_ASSOC="/home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/allchr"
+cd ${PATH_finemapping}
 
 module load gcc/9.3
 module unload R/4.2.1
 module load R/4.1.0
+
 chmod o+x src/pre_processing_Polyfun.R
 dos2unix src/pre_processing_Polyfun.R
 Rscript src/pre_processing_Polyfun.R \
@@ -69,111 +71,114 @@ anti_join.to_csv("/scratch/gen1/nnp5/Fine_mapping/tmp_data/missed_SNP_prior_manu
 
 ##Run the FIFO with SuSiE:
 #Fine-mapping with SuSiE, using pre-computed summary LD information from the UK Biobank
-#download an LD matrix
+#download an LD matrix. NB: they are now availabale on AWS:
+#wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr11_1_3000001.npz
+#wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr11_1_3000001.gz
+
 mkdir -p LD_cache
 mkdir output
 mkdir /scratch/gen1/nnp5/Fine_mapping/tmp_data/LD_temp
 cd /scratch/gen1/nnp5/Fine_mapping/tmp_data/LD_temp
 #dowload for each sentinel the appropriate region:
 #chr2 "2" "102426362" "103426362":
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr2_102000001_105000001.npz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr2_102000001_105000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr2_102000001_105000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr2_102000001_105000001.gz
 #"2" "242192858" "243192858"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr2_242000001_245000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr2_242000001_245000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr2_242000001_245000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr2_242000001_245000001.npz
 #chr3 "3" "49524027" "50524027"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr3_48000001_51000001.npz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr3_48000001_51000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr3_48000001_51000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr3_48000001_51000001.gz
 #chr5 "5" "109901872" "110901872"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr5_109000001_112000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr5_109000001_112000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr5_109000001_112000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr5_109000001_112000001.npz
 #chr5 "5" "130526218" "131526218"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr5_130000001_133000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr5_130000001_133000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr5_130000001_133000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr5_130000001_133000001.npz
 #chr5 "5" "131270805" "132270805"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr5_131000001_134000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr5_131000001_134000001.npz
-#chr6 "6" "32086794" "33086794"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr6_32000001_35000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr6_32000001_35000001.npz2
-#chr6 "6" "30829494" "3182949"
-#same files of (chr6 "6" "32086794" "33086794")
-#chr6 "6" "31506597" "32506597"
-#same files of (chr6 "6" "32086794" "33086794")
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr5_131000001_134000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr5_131000001_134000001.npz
+#chr6 "6" "31006597" "33586794"
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr6_31000001_34000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr6_31000001_34000001.npz2
 #chr8 "8" "80792599" "81792599"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr8_80000001_83000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr8_80000001_83000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr8_80000001_83000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr8_80000001_83000001.npz
 #chr9 "9" "5709697" "6709697"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr9_5000001_8000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr9_5000001_8000001.npz
-#chr10 "10" "8542744" "9542744"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr10_8000001_11000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr10_8000001_11000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr9_5000001_8000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr9_5000001_8000001.npz
+#chr10 "10" "8042744" "10064361"
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr10_8000001_11000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr10_8000001_11000001.npz
 #chr11 "11" "75796671" "76796671"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr11_75000001_78000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr11_75000001_78000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr11_75000001_78000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr11_75000001_78000001.npz
 #chr12 "12" "55935504" "56935504"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr12_55000001_58000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr12_55000001_58000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr12_55000001_58000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr12_55000001_58000001.npz
 #chr12 "12" "56993727" "57993727"
 #same files of (chr12 "12" "55935504" "56935504")
 #chr15 "15" "66942596" "67942596"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr15_66000001_69000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr15_66000001_69000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr15_66000001_69000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr15_66000001_69000001.npz
 #chr17 "17" "37573838" "38573838"
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr17_37000001_40000001.gz
-wget https://data.broadinstitute.org/alkesgroup/UKBB_LD/chr17_37000001_40000001.npz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr17_37000001_40000001.gz
+wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr17_37000001_40000001.npz
 cd /home/n/nnp5/software/polyfun
 #run fine-mapper
 
+
+
 #######save in the file: '/scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions':
-#2 102426362 103426362
+#2 101926362 103926362
 #chr2_102000001_105000001
-#2 242192858 243192858
+#2 241692858 243692858
 #chr2_242000001_245000001
-#3 49524027 50524027
+#3 49024027 51024027
 #chr3_48000001_51000001
-#5 109901872 110901872
+#5 109401872 111401872
 #chr5_109000001_112000001
-#5 130526218 131526218
+#5 130026218 132770805
 #chr5_130000001_133000001
-#5 131270805 132270805
-#chr5_131000001_134000001
-#6 32086794 33086794
-#chr6_32000001_35000001
-#6 31506597 32506597
-#chr6_32000001_35000001
-#6 31506597 32506597
-#chr6_32000001_35000001
-#8 80792599 81792599
+#6 31006597 33586794
+#chr6_31000001_34000001
+#8 80292599 82292599
 #chr8_80000001_83000001
-#9 5709697 6709697
+#9 5209697 7209697
 #chr9_5000001_8000001
-#10 8549253 9549253 #done on the second top snp rs12413578 GRCh37 9049253
+#10 8042744 10064361
 #chr10_8000001_11000001
-#11 75796671 76796671
+#11 75296671 77296671
 #chr11_75000001_78000001
-#12 55935504 56935504
+#12 55435504 58493727
 #chr12_55000001_58000001
-#12 56993727 57993727
-#chr12_55000001_58000001
-#15 66942596 67942596
+#15 66442596 68442596
 #chr15_66000001_69000001
-#17 37573838 38573838
+#17 37073838 39073838
 #chr17_37000001_40000001
 
 touch /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
 
 #need to change these two index for each sentinel:
-chr_row=5
-ldref_row=6
+for line in 1 3 5 7 9 11 13 15 17 19 21 23 25
+do
+chr_row=$line
+ldref_row=$(($chr_row +1))
 
 chr=$(awk -v row=$chr_row 'NR == row {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 start=$(awk -v row=$chr_row 'NR == row {print $2}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 end=$(awk -v row=$chr_row 'NR == row {print $3}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 ldref=$(awk -v row_2=$ldref_row 'NR == row_2 {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions)
 
-#Run the actual FIFO:
+##QC:
+#Check which variant are not used in the fine-mapping among the one in my summary stats. Does this affect my fine-mapping
+##results?
+awk -F "\t" -v CHR="$chr" '$3 == CHR {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/missed_SNP_prior_manual.txt | \
+    awk -F "\t" -v START_POS="$start" '$4 >= START_POS {print}' | awk -F "\t" -v END_POS="$end" '$4 <= END_POS {print}' \
+    >> /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
+
+#FIFO Polyfun+Susie:
+#It will raise an error for chromosome 6 locus because in the MHC locus, and there is no priors calculated for this locus.
 python /home/n/nnp5/software/polyfun/finemapper.py \
     --ld /scratch/gen1/nnp5/Fine_mapping/tmp_data/LD_temp/$ldref \
     --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/SNP_prior_manual.parquet \
@@ -184,10 +189,50 @@ python /home/n/nnp5/software/polyfun/finemapper.py \
     --method susie \
     --max-num-causal 10 \
     --allow-missing \
-    --out ${PATH_finemapping}/output/manual_finemap.UKB.$chr.$start.$end.gz
+    --out ${PATH_finemapping}/output/polyfun_susie.UKB.$chr.$start.$end
 
-# Check which variant are not used in the fine-mapping among the one in my summary stats. Does this affect my fine-mapping
-##results?
-awk -F "\t" -v CHR="$chr" '$3 == CHR {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/missed_SNP_prior_manual.txt | \
-    awk -F "\t" -v START_POS="$start" '$4 >= START_POS {print}' | awk -F "\t" -v END_POS="$end" '$4 <= END_POS {print}' \
-    >> /scratch/gen1/nnp5/Fine_mapping/tmp_data/missing_SNP_for_finemapping_in_sentinelregion.txt
+#Extract credset 95% in R:
+Rscript ${PATH_finemapping}/src/credset.R \
+    ${PATH_finemapping}/output/polyfun_susie.UKB.$chr.$start.$end \
+    ${PATH_finemapping}/output/polyfun_susie.UKB.$chr.$start.$end.credset
+
+#FIFO Polyfun+finemap:
+#It will raise an error for chromosome 6 locus because in the MHC locus, and there is no priors calculated for this locus.
+python /home/n/nnp5/software/polyfun/finemapper.py \
+    --ld /scratch/gen1/nnp5/Fine_mapping/tmp_data/LD_temp/$ldref \
+    --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/SNP_prior_manual.parquet \
+    --n 46086 \
+    --chr $chr \
+    --start $start \
+    --end $end \
+    --method finemap \
+    --finemap-exe /home/n/nnp5/software/finemap_v1.4.1_x86_64/finemap_v1.4.1_x86_64 \
+    --max-num-causal 10 \
+    --allow-missing \
+    --out ${PATH_finemapping}/output/polyfun_finemap.UKB.$chr.$start.$end
+
+#Extract credset 95% in R:
+Rscript ${PATH_finemapping}/src/credset.R \
+    ${PATH_finemapping}/output/polyfun_finemap.UKB.$chr.$start.$end \
+    ${PATH_finemapping}/output/polyfun_finemap.UKB.$chr.$start.$end.credset
+done
+
+#Visualisation of the results:
+chmod o+x src/comparison_credset.R
+dos2unix src/comparison_credset.R
+for line in {2..15}
+do
+SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
+chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
+start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
+end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
+Rscript ${PATH_finemapping}/src/comparison_credset.R \
+    /home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
+     ${PATH_finemapping}/output/finemap_${chr}_${SNP}_${start}_${end}.snp \
+     ${PATH_finemapping}/output/susie_${chr}_${SNP}_${start}_${end}.txt \
+     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
+     ${PATH_finemapping}/output/polyfun_finemap.UKB.${chr}.${start}.${end} \
+     ${PATH_finemapping}/output/polyfun_susie.UKB.${chr}.${start}.${end} \
+     ${chr} ${start} ${end}
+done
+
