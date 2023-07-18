@@ -20,6 +20,8 @@ module load plink2
 ##data.bgen and data.bgen.bgi:
 #qsub -t 1-22 ${PATH_finemapping}/src/bgenix_index.sh
 
+##output folder:
+mkdir ${PATH_finemapping}/output/finemap
 
 ##data.sample:
 grep -w -F -f /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_individuals \
@@ -64,7 +66,7 @@ awk {'print $1'} /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_indivi
 ##data.z:
 #rsid chromosome position allele1 allele2
 #input/fine_mapping_regions_merged from create_fine_mapping_merged.sh
-for line in {2..15}
+for line in {2..14}
 do
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
@@ -92,7 +94,7 @@ echo "input/ldstore_chr${chr}_${SNP}.z;/scratch/gen1/nnp5/Fine_mapping/tmp_data/
 # #NB:The order of the SNPs in the dataset.ld must correspond to the order of SNPs in dataset.z.
 cd ${PATH_finemapping}
 echo "z;bcor;snp;config;cred;log;n_samples" > ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
-echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;output/finemap_${chr}_${SNP}_${start}_${end}.snp;output/finemap_${chr}_${SNP}_${start}_${end}.config;output/finemap_${chr}_${SNP}_${start}_${end}.cred;output/finemap_${chr}_${SNP}_${start}_${end}.log;46086" \
+echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;output/finemap/finemap_${chr}_${SNP}_${start}_${end}.snp;output/finemap/finemap_${chr}_${SNP}_${start}_${end}.config;output/finemap/finemap_${chr}_${SNP}_${start}_${end}.cred;output/finemap/finemap_${chr}_${SNP}_${start}_${end}.log;46086" \
     >> ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
 
 
@@ -109,11 +111,11 @@ done
 
 #Plot in R to compare GWAS p-value and fine-mapping PIP:
 #from this website: https://www.mv.helsinki.fi/home/mjxpirin/GWAS_course/material/GWAS7.html
-locus="3_rs778801698_49024027_51024027"
-Rscript src/finemap_plot.R $locus
 locus="2_rs12470864_101926362_103926362"
 Rscript src/finemap_plot.R $locus
 locus="2_rs6761047_241692858_243692858"
+Rscript src/finemap_plot.R $locus
+locus="3_rs778801698_49024027_51024027"
 Rscript src/finemap_plot.R $locus
 locus="5_rs1837253_109401872_111401872"
 Rscript src/finemap_plot.R $locus
