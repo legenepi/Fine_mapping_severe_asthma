@@ -101,14 +101,9 @@ echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;outpu
     --sss \
     --n-causal-snps 10 \
     --in-files ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z \
-    --dataset 1
+    --log
 
 done
-
-#post analysis: Find the credible set variants as per FINEMAP:
-#grep -v "^#"  /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_*.cred1 \
-#    > /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap.cred1.digest
-
 
 #six columns interpreted as SNPID, rsid, chromosome, position, first and second alleles.
 
@@ -130,7 +125,7 @@ locus="8_rs7824394_80292599_82292599"
 Rscript src/finemap_plot.R $locus
 locus="9_rs992969_5209697_7209697"
 Rscript src/finemap_plot.R $locus
-locus="10_rs201499805_8042744_10042744"
+locus="10_rs201499805_rs1444789_8042744_10064361"
 Rscript src/finemap_plot.R $locus
 locus="11_rs10160518_75296671_77296671"
 Rscript src/finemap_plot.R $locus
