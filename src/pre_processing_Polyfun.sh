@@ -18,6 +18,9 @@ module load gcc/9.3
 module unload R/4.2.1
 module load R/4.1.0
 
+mkdir ${PATH_finemapping}/output/polyfun_finemap
+mkdir ${PATH_finemapping}/output/polyfun_susie
+
 chmod o+x src/pre_processing_Polyfun.R
 dos2unix src/pre_processing_Polyfun.R
 Rscript src/pre_processing_Polyfun.R \
@@ -32,6 +35,7 @@ conda activate polyfun
 #Step1. Create a munged summary statistics file in a PolyFun-friendly parquet format.
 cut -d ' ' -f -11 ${PATH_finemapping}/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
     > /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_betase_input_mungestat
+
 python /home/n/nnp5/software/polyfun/munge_polyfun_sumstats.py \
   --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
   --n 46086 \
@@ -60,7 +64,7 @@ result_clean = result[["CHR_y", "BP_y", "SNP", "A1_x", "A2_x", "MAF", "N", "Z", 
 result_clean.columns = ['CHR','BP','SNP','A1','A2','MAF','N','Z','SNPVAR']
 nodup_result_clean = result_clean.sort_values('SNP').drop_duplicates(subset=['CHR', 'BP'], keep='first')
 nodup_result_clean.to_parquet("/scratch/gen1/nnp5/Fine_mapping/tmp_data/SNP_prior_manual.parquet")
-#find sumstat SNPs that are not have SNPVAR:
+#find sumstat SNPs that do not have SNPVAR:
 #perform outer join
 outer = sumstat.merge(nodup_result_clean, how='outer', on = 'SNP', indicator=True)
 #perform anti-join
@@ -124,11 +128,8 @@ wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr15_66000001_69
 #chr17 "17" "37573838" "38573838"
 wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr17_37000001_40000001.gz
 wget https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/chr17_37000001_40000001.npz
+
 cd /home/n/nnp5/software/polyfun
-#run fine-mapper
-
-
-
 #######save in the file: '/scratch/gen1/nnp5/Fine_mapping/tmp_data/fine_mapping_regions':
 #2 101926362 103926362
 #chr2_102000001_105000001
@@ -189,12 +190,12 @@ python /home/n/nnp5/software/polyfun/finemapper.py \
     --method susie \
     --max-num-causal 10 \
     --allow-missing \
-    --out ${PATH_finemapping}/output/polyfun_susie.UKB.$chr.$start.$end
+    --out ${PATH_finemapping}/output/polyfun_susie/polyfun_susie.UKB.$chr.$start.$end
 
 #Extract credset 95% in R:
 Rscript ${PATH_finemapping}/src/credset.R \
-    ${PATH_finemapping}/output/polyfun_susie.UKB.$chr.$start.$end \
-    ${PATH_finemapping}/output/polyfun_susie.UKB.$chr.$start.$end.credset
+    ${PATH_finemapping}/output/polyfun_susie/polyfun_susie.UKB.$chr.$start.$end \
+    ${PATH_finemapping}/output/polyfun_susie/polyfun_susie_credset.UKB.$chr.$start.$end
 
 #FIFO Polyfun+finemap:
 #It will raise an error for chromosome 6 locus because in the MHC locus, and there is no priors calculated for this locus.
@@ -209,30 +210,11 @@ python /home/n/nnp5/software/polyfun/finemapper.py \
     --finemap-exe /home/n/nnp5/software/finemap_v1.4.1_x86_64/finemap_v1.4.1_x86_64 \
     --max-num-causal 10 \
     --allow-missing \
-    --out ${PATH_finemapping}/output/polyfun_finemap.UKB.$chr.$start.$end
+    --out ${PATH_finemapping}/output/polyfun_finemap/polyfun_finemap.UKB.$chr.$start.$end
 
 #Extract credset 95% in R:
 Rscript ${PATH_finemapping}/src/credset.R \
-    ${PATH_finemapping}/output/polyfun_finemap.UKB.$chr.$start.$end \
-    ${PATH_finemapping}/output/polyfun_finemap.UKB.$chr.$start.$end.credset
-done
-
-#Visualisation of the results:
-chmod o+x src/comparison_credset.R
-dos2unix src/comparison_credset.R
-for line in {2..15}
-do
-SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
-chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
-start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
-end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
-Rscript ${PATH_finemapping}/src/comparison_credset.R \
-    /home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
-     ${PATH_finemapping}/output/finemap_${chr}_${SNP}_${start}_${end}.snp \
-     ${PATH_finemapping}/output/susie_${chr}_${SNP}_${start}_${end}.txt \
-     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
-     ${PATH_finemapping}/output/polyfun_finemap.UKB.${chr}.${start}.${end} \
-     ${PATH_finemapping}/output/polyfun_susie.UKB.${chr}.${start}.${end} \
-     ${chr} ${start} ${end}
+    ${PATH_finemapping}/output/polyfun_finemap/polyfun_finemap.UKB.$chr.$start.$end \
+    ${PATH_finemapping}/output/polyfun_finemap/polyfun_finemap_credset.UKB.$chr.$start.$end
 done
 
