@@ -43,14 +43,8 @@ python /home/n/nnp5/software/polyfun/munge_polyfun_sumstats.py \
   --min-info 0.85 \
   --min-maf 0.01
 
-#Approach 1 (UK Biobank pre-computed prior causal probabilities); no information for HLA region !
-##A.Extract pre-computed prior causal probabilities in UK Biobank - White British:
-python /home/n/nnp5/software/polyfun/extract_snpvar.py \
-    --sumstats /scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet \
-    --allow-missing \
-    --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/SNPs_PriCauPro
-
-##B.Manually retrieve the prior in python:
+#Approach 1 (UK Biobank- White British pre-computed prior causal probabilities); no information for HLA region !
+#Manually retrieve the prior in python:
 import pandas as pd
 sumstat = pd.read_parquet("/scratch/gen1/nnp5/Fine_mapping/tmp_data/maf001_broad_pheno_1_5_ratio_sumstats_munged.parquet")
 polyfun_snp=pd.read_parquet("/home/n/nnp5/software/polyfun/snpvar_meta.chr1_7.parquet")

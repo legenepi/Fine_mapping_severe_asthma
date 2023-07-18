@@ -23,7 +23,7 @@ library(reticulate)
 
 
 # Rationale
-Fine mapping of sentinel variants discovered in the severe asthma GWAS on UK Biobank European dataset.
+Fine mapping of sentinel variants discovered in the severe asthma GWAS on UKBiobank European dataset. I used four different tools and compare the credible sets.
 
 # Analysis
 Code: Fine_mapping_severe_asthma/src/create_fine_mapping_regions_merged.sh
@@ -44,6 +44,9 @@ Code: Fine_mapping_severe_asthma/src/Susie.sh
 Code: Fine_mapping_severe_asthma/src/susie.R
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/susie.R'), eval=FALSE}
 ```
+Code: Fine_mapping_severe_asthma/src/credset_susie.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/credset_susie.R'), eval=FALSE}
+```
 Code: Fine_mapping_severe_asthma/src/z_score.R
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/z_score.R'), eval=FALSE}
 ```
@@ -63,9 +66,7 @@ Code: Fine_mapping_severe_asthma/src/PolyFun_approach3.sh
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/PolyFun_approach3.sh'), eval=FALSE}
 ```
 
-
-
-Four different fine-mapping tools were implemented, more precisely: I tested and compared the results for Susie [1] and FINEMAP [2] tools with and without functional information given as a prior for the model. For the functional informed fine-mapping, I used the PolyFUN tool [3].
+Four different fine-mapping tools were implemented, more precisely: looking into genomic regions of 2Mb, I tested and compared the results for Susie [1] and FINEMAP [2] tools with and without functional information given as a prior for the model. For the functional informed fine-mapping, I used the PolyFUN tool [3] with the pre-computed prior and linkage disequilibrium matrices as provided by the tool.
 
 
 # Results
@@ -73,7 +74,9 @@ Four different fine-mapping tools were implemented, more precisely: I tested and
 # Conclusion
 
 # References
-
+1.
+2.
+3.
 
 # Notes
 
