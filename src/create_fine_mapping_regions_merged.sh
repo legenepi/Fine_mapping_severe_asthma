@@ -15,5 +15,6 @@ Rscript /home/n/nnp5/PhD/PhD_project/Post_GWAS/src/merge_loci.R \
 #I got another merged loci, on chromosome 10. So I have to add this new region in the input file for fine_mapping regions:
 #Add the new region on the /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/regions_merged_for_cond:
 echo "rs201499805_rs1444789 10 9042744_9064361 8042744 10064361" | \
-    cat /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/regions_merged_for_cond - \
+    cat /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/regions_merged_for_cond - | \
+    grep -v -w "rs201499805 10 9042744 8042744 10042744" - \
     > ${PATH_finemapping}/input/fine_mapping_regions_merged
