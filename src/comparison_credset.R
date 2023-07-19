@@ -44,8 +44,12 @@ susie <- fread(susie_file)
 susie_sumstat <- fread(susie_sumstat_file)
 susie_sumstat$vars.variable <- seq(1,dim(susie_sumstat)[1])
 susie_df <- left_join(susie,susie_sumstat,by="vars.variable")
+if (dim(susie_df %>% filter(vars.cs == 1))[1] != 0 ) {
+susie_df_credset <- susie_df %>% filter(vars.cs == 1)
+} else {
 susie_df$cumsum_pip <- cumsum(susie_df$vars.variable_prob)
 susie_df_credset <- susie_df %>% filter(cumsum_pip <= 0.95 | vars.variable_prob >= 0.95)
+}
 
 #polyfun+susie plot:
 polyfun_susie <- fread(polyfun_susie_file)
@@ -103,7 +107,7 @@ venn.diagram(
      ps_credset %>%  select(BP) %>% distinct() %>% unlist(),
      pf_credset %>%  select(BP) %>% distinct() %>% unlist()
     ),
-   category.names = c("susie", "finemap", "polyfun_susie", "polyfun_finemap"),
+   category.names = c("finemap", "susie", "polyfun_susie", "polyfun_finemap"),
    disable.logging = TRUE,
    filename = venn_name,
    output = TRUE ,

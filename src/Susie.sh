@@ -2,10 +2,10 @@
 
 #PBS -N SuSie
 #PBS -j oe
-#PBS -o SuSie
-#PBS -l walltime=4:0:0
+#PBS -o SuSie_log
+#PBS -l walltime=50:0:0
 #PBS -l vmem=50gb
-#PBS -l nodes=1:ppn=1
+#PBS -l nodes=1:ppn=4
 #PBS -d .
 #PBS -W umask=022
 
@@ -19,8 +19,10 @@ module unload R/4.2.1
 module load R/4.1.0
 module load plink2
 
+#mkdir ${PATH_finemapping}/output/susie
+
 #Input data:
-for line in {2..15}
+for line in {12..14}
 do
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
@@ -28,64 +30,66 @@ start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine
 end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 
 #Creating region bgen
-cd /scratch/gen1/nnp5/Fine_mapping/tmp_data/
-~nrgs1/bin/bgenix -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen -incl-range ${chr}:${start}-${end} > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
-cd ${PATH_finemapping}
+#if chr has double digit, I do not need the '0' in the chromosome name, so I need two different string for the
+#-incl-range argument:
+#cd /scratch/gen1/nnp5/Fine_mapping/tmp_data/
+#if [[ ${chr} -lt 10 ]]
+#then
+#~nrgs1/bin/bgenix -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen \
+#    -incl-range 0${chr}:${start}-${end} \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
+#fi
+
+#if [[ ${chr} -gt 9 ]]
+#then
+#  ~nrgs1/bin/bgenix -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen \
+#    -incl-range ${chr}:${start}-${end} \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
+#fi
+#cd ${PATH_finemapping}
+
+
 
 #Exclude multi-allelic variants and find the common SNP IDs for the genotyped matrix and the zscore input files:
 #use the file for each regions created by FINEMAP.sh:
-grep -v -w -F -f /data/gen1/UKBiobank_500K/imputed/multiallelic.snps \
-    ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.z \
-    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt
+#grep -v -w -F -f /data/gen1/UKBiobank_500K/imputed/multiallelic.snps \
+#    ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.z \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt
 
-awk 'NR > 1 {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
-    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_snps.txt
+#awk 'NR > 1 {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_snps.txt
 
 #zscore:
-Rscript src/z_score.R /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
-    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_z_scores.txt
+#Rscript src/z_score.R /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
+#    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_z_scores.txt
 
 
 #Format region data for input to R
-plink2 \
-    --bgen /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen ref-first \
-    --sample ${PATH_finemapping}/input/ldstore.sample \
-    --export A \
-    --extract /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_snps.txt \
-    --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}
+#plink2 \
+#    --bgen /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen ref-first \
+#    --sample ${PATH_finemapping}/input/ldstore.sample \
+#    --export A \
+#    --extract /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_snps.txt \
+#    --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}
 
-cut -f7- /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.raw \
-    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols.raw
+#cut -f7- /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.raw \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols.raw
 
-awk 'NR>1 {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols.raw \
-    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw
+#awk 'NR>1 {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols.raw \
+#    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw
 
 Rscript src/susie.R \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_z_scores.txt \
-    ${PATH_finemapping}/output/susie_${chr}_${SNP}_${start}_${end}.txt \
-    ${PATH_finemapping}/output/susie_${chr}_${SNP}_${start}_${end}.jpeg
+    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
+    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.jpeg
 
+Rscript src/credset_susie.R \
+    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
+    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
+    ${PATH_finemapping}/output/susie/susie_credset.${SNP}.$chr.$start.$end
 done
 
-
-
-#post analysis: Found the credible set variants as per susie:
-#awk 'NR <= 2 {print $8}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | tr , '\n' | tail -n +2 \
-#    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_index.txt
-
-#awk '{print $1, $2, $3, $4, $5, $6, $7}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | \
-#    grep -w -F -f ${PATH_finemapping}/output/susie_3_rs778801698_cs_index.txt - \
-#    > ${PATH_finemapping}/output/susie_3_rs778801698.txt.digest
-
-
-#awk 'NR <= 2 {print $8}' ${PATH_finemapping}/output/susie_3_rs778801698.txt | tr , '\n' | tail -n +2 | awk '{print $1+1}' \
-#    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_index2.txt
-
-#awk '{print NR,$1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | \
-#    grep -w -F -f ${PATH_finemapping}/output/susie_3_rs778801698_cs_index2.txt - | awk '{print $2}' | \
-#    grep -w -F -f - /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | awk '{print $1}' \
-#    > ${PATH_finemapping}/output/susie_3_rs778801698_cs_snps.txt
 
 
 

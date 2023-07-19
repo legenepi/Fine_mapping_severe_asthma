@@ -68,10 +68,17 @@ Code: Fine_mapping_severe_asthma/src/PolyFun_approach3.sh
 
 Four different fine-mapping tools were implemented, more precisely: looking into genomic regions of 2Mb, I tested and compared the results for Susie [1] and FINEMAP [2] tools with and without functional information given as a prior for the model. For the functional informed fine-mapping, I used the PolyFUN tool [3] with the pre-computed prior and linkage disequilibrium matrices as provided by the tool.
 
+<br>
+## Particular case: chromosome 12
+For the genomic region on chromosome 12, there were two associated genomic loci with the sentinel variants in linkage disequilibrium: rs705705 and rs3024971 had R2 of 3x10-4.
+<br>
+I therefore think that I should analyse the two regions separately, e.g. running a fine-mapping for a +/-500Kb region instead of +/-1MB in order to see if I obtained different results.
 
 # Results
+For the fine-mapping using PolyFUN, I lost several variants in the filtering steps. We decided to take the results from SuSiE and FINEMAP only into the gene-to-variant analyses.
 
 # Conclusion
+Four different tools were used for the fine-mapping analysisis. Results from SuSiE and FINEMAP will be taken for following analyses.
 
 # References
 1.

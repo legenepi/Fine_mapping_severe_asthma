@@ -3,6 +3,7 @@
 
 args = commandArgs(trailingOnly=TRUE)
 
+library(tidyverse)
 library(data.table)
 library(susieR)
 
