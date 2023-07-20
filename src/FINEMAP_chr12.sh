@@ -17,46 +17,7 @@ module unload R/4.2.1
 module load R/4.1.0
 module load plink2
 
-##data.bgen and data.bgen.bgi:
-#qsub -t 1-22 ${PATH_finemapping}/src/bgenix_index.sh
-
-##output folder:
-mkdir ${PATH_finemapping}/output/finemap
-
-##data.sample:
-grep -w -F -f /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_individuals \
-    /data/gen1/UKBiobank_500K/severe_asthma/data/ukbiobank_app56607_for_regenie.sample | awk '{print $1, $2, $3}' \
-    > ${PATH_finemapping}/input/ldstore.sample.tmp
-echo "ID_1 ID_2 missing" > ${PATH_finemapping}/input/ldstore_header.sample
-echo "0 0 0" > ${PATH_finemapping}/input/ldstore_secondline.sample
-cat ${PATH_finemapping}/input/ldstore_header.sample ${PATH_finemapping}/input/ldstore_secondline.sample | \
-    cat - ${PATH_finemapping}/input/ldstore.sample.tmp \
-    > ${PATH_finemapping}/input/ldstore.sample
-rm ${PATH_finemapping}/input/ldstore.sample.tmp ${PATH_finemapping}/input/ldstore_header.sample \
-    ${PATH_finemapping}/input/ldstore_secondline.sample
-
-##sevasthma.z: space-delimited text file
-#rsid chromosome position allele1 allele2 maf beta se
-awk '{print $1, $2, $3, $5, $4, $12, $6, $7}' \
-    ${PATH_finemapping}/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat |
-    awk '
-    {if($2==1) $2 = "01"
-     if($2==2) $2 = "02"
-     if($2==3) $2 = "03"
-     if($2==4) $2 = "04"
-     if($2==5) $2 = "05"
-     if($2==6) $2 = "06"
-     if($2==7) $2 = "07"
-     if($2==8) $2 = "08"
-     if($2==9) $2 = "09"
-     }
-     1' | \
-    sed "1s/.*/rsid chromosome position allele1 allele2 maf beta se/" \
-    > ${PATH_finemapping}/input/sevasthma.z
-
-##dataset.incl:
-awk {'print $1'} /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_individuals | tail -n +2 \
-    > ${PATH_finemapping}/input/ldstore.incl
+cd ${PATH_finemapping}
 
 ##SEVASTHMA.BCOR: as output from LDstore2 BCOR v1.1
 #Need to be created with LDSTORE2:
@@ -66,12 +27,12 @@ awk {'print $1'} /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_indivi
 ##data.z:
 #rsid chromosome position allele1 allele2
 #input/fine_mapping_regions_merged from create_fine_mapping_merged.sh
-for line in {2..14}
+for line in {2..3}
 do
-SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
-chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
-start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
-end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
+SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_chr12)
+chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_chr12)
+start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_chr12)
+end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_chr12)
 
 awk -v chr_idx=$chr 'NR==1; NR > 1 {if ($2 == chr_idx) print}'  ${PATH_finemapping}/input/sevasthma.z | \
     awk -v START_POS="$start" 'NR==1; NR > 1 {if ($3 >= START_POS) print}' | \
@@ -92,11 +53,9 @@ echo "input/ldstore_chr${chr}_${SNP}.z;/scratch/gen1/nnp5/Fine_mapping/tmp_data/
 
 #master file for FINEMAP: semicolon-delimiter text file:
 # #NB:The order of the SNPs in the dataset.ld must correspond to the order of SNPs in dataset.z.
-cd ${PATH_finemapping}
 echo "z;bcor;snp;config;cred;log;n_samples" > ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
 echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;output/finemap/finemap_${chr}_${SNP}_${start}_${end}.snp;output/finemap/finemap_${chr}_${SNP}_${start}_${end}.config;output/finemap/finemap_${chr}_${SNP}_${start}_${end}.cred;output/finemap/finemap_${chr}_${SNP}_${start}_${end}.log;46086" \
     >> ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
-
 
 #finemap:
 /home/n/nnp5/software/finemap_v1.4.1_x86_64/finemap_v1.4.1_x86_64 \
@@ -111,31 +70,9 @@ done
 
 #Plot in R to compare GWAS p-value and fine-mapping PIP:
 #from this website: https://www.mv.helsinki.fi/home/mjxpirin/GWAS_course/material/GWAS7.html
-locus="2_rs12470864_101926362_103926362"
+locus="12_rs705705_55935504_56935504"
 Rscript src/finemap_plot.R $locus
-locus="2_rs6761047_241692858_243692858"
-Rscript src/finemap_plot.R $locus
-locus="3_rs778801698_49024027_51024027"
-Rscript src/finemap_plot.R $locus
-locus="5_rs1837253_109401872_111401872"
-Rscript src/finemap_plot.R $locus
-locus="5_rs2188962_rs152815_130026218_132770805"
-Rscript src/finemap_plot.R $locus
-locus="6_rs9271365_rs2523572_rs6462_31006597_33586794"
-Rscript src/finemap_plot.R $locus
-locus="8_rs7824394_80292599_82292599"
-Rscript src/finemap_plot.R $locus
-locus="9_rs992969_5209697_7209697"
-Rscript src/finemap_plot.R $locus
-locus="10_rs201499805_rs1444789_8042744_10064361"
-Rscript src/finemap_plot.R $locus
-locus="11_rs10160518_75296671_77296671"
-Rscript src/finemap_plot.R $locus
-locus="12_rs705705_rs3024971_55435504_58493727"
-Rscript src/finemap_plot.R $locus
-locus="15_rs17293632_66442596_68442596"
-Rscript src/finemap_plot.R $locus
-locus="17_17:38073838_CCG_C_37073838_39073838"
+locus="12_rs3024971_56993727_57993727"
 Rscript src/finemap_plot.R $locus
 
 #Merge credset into a unique file for Finemapping.xlsx in Report:

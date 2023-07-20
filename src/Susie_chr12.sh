@@ -1,0 +1,105 @@
+#!/bin/bash
+
+#PBS -N SuSie
+#PBS -j oe
+#PBS -o SuSie_log
+#PBS -l walltime=3:0:0
+#PBS -l vmem=50gb
+#PBS -l nodes=1:ppn=4
+#PBS -d .
+#PBS -W umask=022
+
+PATH_finemapping="/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma"
+PATH_ASSOC="/home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/allchr"
+
+cd ${PATH_finemapping}
+
+module load gcc/9.3
+module unload R/4.2.1
+module load R/4.1.0
+module load plink2
+
+#mkdir ${PATH_finemapping}/output/susie
+
+#Input data:
+for line in {2..3}
+do
+SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_chr12)
+chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_chr12)
+start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_chr12)
+end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_chr12)
+
+#Creating region bgen
+cd /scratch/gen1/nnp5/Fine_mapping/tmp_data/
+  ~nrgs1/bin/bgenix -g /scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen \
+    -incl-range ${chr}:${start}-${end} \
+    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
+cd ${PATH_finemapping}
+
+
+
+#Exclude multi-allelic variants and find the common SNP IDs for the genotyped matrix and the zscore input files:
+#use the file for each regions created by FINEMAP.sh:
+grep -v -w -F -f /data/gen1/UKBiobank_500K/imputed/multiallelic.snps \
+    ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.z \
+    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt
+
+awk 'NR > 1 {print $1}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
+    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_snps.txt
+
+#zscore:
+Rscript src/z_score.R /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
+    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_z_scores.txt
+
+
+#Format region data for input to R
+plink2 \
+    --bgen /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen ref-first \
+    --sample ${PATH_finemapping}/input/ldstore.sample \
+    --export A \
+    --extract /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_snps.txt \
+    --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}
+
+cut -f7- /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.raw \
+    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols.raw
+
+awk 'NR>1 {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols.raw \
+    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw
+
+Rscript src/susie.R \
+    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw \
+    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_z_scores.txt \
+    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
+    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.jpeg
+
+Rscript src/credset_susie.R \
+    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
+    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
+    ${PATH_finemapping}/output/susie/susie_credset.${SNP}.$chr.$start.$end
+done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if there is some NAs in the genotype matrix (keep it because it is a nice script)
+#awk '{ lines[NR] = $0; for (i = 1; i <= NF; i++) if ($i == "NA") skip[i] = 1;} END { for (i = 1; i <= NR; i++) {
+#    nf = split(lines[i], fields);
+#    for (j = 1; j <= nf; j++) if (!(j in skip)) printf("%s ", fields[j]);
+#    printf("\n");
+#    }
+#    }' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw  > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header_noNA.raw

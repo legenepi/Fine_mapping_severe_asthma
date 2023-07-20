@@ -6,6 +6,7 @@ args = commandArgs(trailingOnly=TRUE)
 library(tidyverse)
 library(data.table)
 library(susieR)
+library(Rfast)
 
 print("Reading data...")
 
@@ -24,7 +25,8 @@ z_scores <- read.table(args[2])
 print("Running Susie...")
 fitted_rss <- susie_rss(z_scores$V1, data.cor, L=10, n=46086)
 
-write.table(summary(fitted_rss),args[3],row.names=FALSE,quote=FALSE,col.names=T,sep="\t")
+df <- as.data.frame(summary(fitted_rss)) %>% select("vars.variable","vars.variable_prob","vars.cs","cs.cs","cs.cs_log10bf","cs.cs_avg_r2","cs.cs_min_r2")
+write.table(df,args[3],row.names=FALSE,quote=FALSE,col.names=T,sep="\t",na="NA")
 
 jpeg(args[4])
 

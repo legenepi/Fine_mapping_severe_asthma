@@ -3,7 +3,7 @@
 #PBS -N SuSie
 #PBS -j oe
 #PBS -o SuSie_log
-#PBS -l walltime=50:0:0
+#PBS -l walltime=10:0:0
 #PBS -l vmem=50gb
 #PBS -l nodes=1:ppn=4
 #PBS -d .
@@ -22,8 +22,9 @@ module load plink2
 #mkdir ${PATH_finemapping}/output/susie
 
 #Input data:
-for line in {12..14}
-do
+#for line in {12..14}
+#do
+line=6
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
@@ -47,7 +48,6 @@ end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_m
 #    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.bgen
 #fi
 #cd ${PATH_finemapping}
-
 
 
 #Exclude multi-allelic variants and find the common SNP IDs for the genotyped matrix and the zscore input files:
@@ -88,7 +88,7 @@ Rscript src/credset_susie.R \
     ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
     ${PATH_finemapping}/output/susie/susie_credset.${SNP}.$chr.$start.$end
-done
+#done
 
 
 
