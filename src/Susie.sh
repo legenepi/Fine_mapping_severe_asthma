@@ -24,7 +24,7 @@ module load plink2
 #Input data:
 #for line in {12..14}
 #do
-line=6
+line=13
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
@@ -78,7 +78,14 @@ end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_m
 #awk 'NR>1 {print}' /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols.raw \
 #    > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw
 
-Rscript src/susie.R \
+#Rscript src/susie.R \
+#    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw \
+#    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_z_scores.txt \
+#    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
+#    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.jpeg
+
+#for 5_rs2188962_rs152815_130026218_132770805, 17:38073838_CCG_C 17 38073838 37073838 39073838:
+Rscript src/Susie_trouble_shooting.R \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}.cols_no_header.raw \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_z_scores.txt \
     ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
