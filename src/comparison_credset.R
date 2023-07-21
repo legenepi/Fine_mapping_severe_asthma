@@ -40,16 +40,7 @@ finemap$cumsum_pip <- cumsum(finemap$prob)
 finemap_credset <- finemap %>% filter(cumsum_pip <= 0.95 | prob >= 0.95)
 
 #susie
-susie <- fread(susie_file)
-susie_sumstat <- fread(susie_sumstat_file)
-susie_sumstat$vars.variable <- seq(1,dim(susie_sumstat)[1])
-susie_df <- left_join(susie,susie_sumstat,by="vars.variable")
-if (dim(susie_df %>% filter(vars.cs == 1))[1] != 0 ) {
-susie_df_credset <- susie_df %>% filter(vars.cs == 1)
-} else {
-susie_df$cumsum_pip <- cumsum(susie_df$vars.variable_prob)
-susie_df_credset <- susie_df %>% filter(cumsum_pip <= 0.95 | vars.variable_prob >= 0.95)
-}
+susie_df <- fread(susie_file)
 
 #polyfun+susie plot:
 polyfun_susie <- fread(polyfun_susie_file)
@@ -75,7 +66,7 @@ plot(finemap$position, finemap$prob, xlab = "SNP", ylab = "prob of causality",ma
 points(finemap[i,"position"], finemap[i,"prob"], cex = 2, lwd = 1.4, col = "dodgerblue")
 
 #susie
-c.bp.s <- susie_df_credset$position
+c.bp.s <- susie_df$position
 i = which(susie_df$position %in% c.bp.s)
 plot(susie_df$position, susie_df$vars.variable_prob, xlab = "SNP", ylab = "prob of causality",main = "SUSIE", ylim=c(0, 1))
 points(susie_df[i,position], susie_df[i,vars.variable_prob], cex = 2, lwd = 1.4, col = "dodgerblue")
@@ -96,14 +87,14 @@ dev.off()
 
 #venn plot:
 print(finemap_credset %>% select(position) %>% distinct() %>% unlist())
-print(susie_df_credset %>%  select(position) %>% distinct() %>% unlist())
+print(susie_df %>%  select(position) %>% distinct() %>% unlist())
 print(ps_credset %>%  select(BP) %>% distinct() %>% unlist())
 print(pf_credset %>%  select(BP) %>% distinct() %>% unlist())
 
 venn.diagram(
    x = list(
      finemap_credset %>% select(position) %>% distinct() %>% unlist(),
-     susie_df_credset %>%  select(position) %>% distinct() %>% unlist(),
+     susie_df %>%  select(position) %>% distinct() %>% unlist(),
      ps_credset %>%  select(BP) %>% distinct() %>% unlist(),
      pf_credset %>%  select(BP) %>% distinct() %>% unlist()
     ),

@@ -16,7 +16,7 @@ end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_m
 Rscript ${PATH_finemapping}/src/comparison_credset.R \
     /home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/maf001_broad_pheno_1_5_ratio_betase_input_mungestat \
      ${PATH_finemapping}/output/finemap/finemap_${chr}_${SNP}_${start}_${end}.snp \
-     ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
+     ${PATH_finemapping}/output/susie/susie_credset.${SNP}.$chr.$start.$end \
      /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
      ${PATH_finemapping}/output/polyfun_finemap/polyfun_finemap.UKB.${chr}.${start}.${end} \
      ${PATH_finemapping}/output/polyfun_susie/polyfun_susie.UKB.${chr}.${start}.${end} \

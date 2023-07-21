@@ -29,6 +29,7 @@ summary(fitted_rss)$cs
 
 print(fitted_rss$pip)
 
+write.table(summary(fitted_rss)$cs,paste0(args[3],"credset"),row.names=TRUE,quote=FALSE,col.names=TRUE,sep="\t")
 write.table(fitted_rss$pip,args[3],row.names=TRUE,quote=FALSE,col.names=FALSE,sep="\t")
 
 jpeg(args[4])

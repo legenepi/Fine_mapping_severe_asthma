@@ -12,7 +12,7 @@ output:
 
 ```{r, setup, hide = TRUE}
 #library reticulate to be able to add chunks in another language
-library(reticulate)
+#library(reticulate)
 #To run this .rmd file in a terminal being in the project folder:
 #export PATH=${PATH}:/cm/shared/apps/R/deps/rstudio/bin/pandoc
 #file="./report/Fine_mapping.Rmd"
@@ -62,32 +62,55 @@ Code: Fine_mapping_severe_asthma/src/credset.R
 Code: Fine_mapping_severe_asthma/src/comparison_credset.R
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/comparison_credset.R'), eval=FALSE}
 ```
-Code: Fine_mapping_severe_asthma/src/PolyFun_approach3.sh
-```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/PolyFun_approach3.sh'), eval=FALSE}
+Code: Fine_mapping_severe_asthma/src/Susie_chr12.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/Susie_chr12.sh'), eval=FALSE}
 ```
-
-Four different fine-mapping tools were implemented, more precisely: looking into genomic regions of 2Mb, I tested and compared the results for Susie [1] and FINEMAP [2] tools with and without functional information given as a prior for the model. For the functional informed fine-mapping, I used the PolyFUN tool [3] with the pre-computed prior and linkage disequilibrium matrices as provided by the tool.
+Code: Fine_mapping_severe_asthma/src/FINEMAP_chr12.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/FINEMAP_chr12.sh'), eval=FALSE}
+```
+Four different fine-mapping tools were implemented, more precisely: looking into genomic regions of 2Mb, I tested and compared the results for SuSiE [1] and FINEMAP [2] tools with and without functional information given as a prior for the model. For the functional informed fine-mapping, I used the PolyFUN tool [3] with the pre-computed prior and linkage disequilibrium matrices as provided by the tool.
+<br>
+I allowed up to 10 causal variants, tested for 46,086 individuals, with in-sample LD matrix created with LDstore2 [4].
 
 <br>
 ## Particular case: chromosome 12
-For the genomic region on chromosome 12, there were two associated genomic loci with the sentinel variants in linkage disequilibrium: rs705705 and rs3024971 had R2 of 3x10-4.
+For the genomic region on chromosome 12, there were two associated genomic loci with the sentinel variants in linkage disequilibrium: rs705705 and rs3024971 had R2 of 3x10-4 (calculated with LD pair [5]).
 <br>
-I therefore think that I should analyse the two regions separately, e.g. running a fine-mapping for a +/-500Kb region instead of +/-1MB in order to see if I obtained different results.
+I therefore think that I should analyse the two regions separately, e.g. running a fine-mapping for a +/-500Kb region instead of +/-1Mb.
 
 # Results
-For the fine-mapping using PolyFUN, I lost several variants in the filtering steps. We decided to take the results from SuSiE and FINEMAP only into the gene-to-variant analyses.
+For the fine-mapping using PolyFUN, I lost several variants in the filtering steps, with an average of 18.64% of variants lost for each locus. We decided to take the results from SuSiE and FINEMAP only into consideration and for the gene-to-variant analyses.
+<br>
+SuSie failed for the fine-mapping in the MHC region and I considered the results from FINEMAP.
+Table 1 showed the number of variants in the credible sets for each tool and the shared ones:
+
+|                                                | N. credset variants by   tool |       |        |
+|------------------------------------------------|:-----------------------------:|:-----:|--------|
+| LOCUS (snpid_b37chr_start_end)                 |            FINEMAP            | SuSiE | Shared |
+| rs12470864_2_101926362_103926362               | 35                            | 9     | 8      |
+| rs6761047_2_241692858_243692858                | 5                             | 8     | 5      |
+| rs778801698_3_49024027_51024027                | 138                           | 214   | 130    |
+| rs1837253_5_109401872_111401872                | 1                             | 1     | 1      |
+| rs2188962_rs152815_5_130026218_132770805       | 2                             |       |        |
+| rs9271365_rs2523572_rs6462_6_31006597_33586794 | 1                             |       |        |
+| rs7824394_8_80292599_82292599                  | 71                            | 88    | 53     |
+| rs992969_9_5209697_7209697                     | 4                             | 6     | 3      |
+| rs201499805_rs1444789_10_8042744_10064361      | 2                             | 4     | 1      |
+| rs10160518_11_75296671_77296671                | 7                             | 9     | 6      |
+| rs705705_rs3024971_12_55435504_58493727        | 4                             | 30    | 0      |
+| rs17293632_15_66442596_68442596                | 4                             | 5     | 4      |
+| 17:38073838_CCG_C_17_37073838_39073838         | 35                            |       |        |
+| rs705705_12_55935504_56935504                  | 27                            | 30    | 26     |
+| rs3024971_12_56993727_57993727                 | 2                             | 2     | 2      |
 
 # Conclusion
 Four different tools were used for the fine-mapping analysisis. Results from SuSiE and FINEMAP will be taken for following analyses.
 
 # References
-1.
-2.
-3.
-
+1.Zou Y. et al., Fine-mapping from summary data with the "Sum of Single Effects" model. PLoS Genet. 2022 Jul 19;18(7):e1010299. doi: 10.1371/journal.pgen.1010299. PMID: 35853082; PMCID: PMC9337707.
+2.Benner C. et al., FINEMAP: efficient variable selection using summary data from genome-wide association studies. Bioinformatics. 2016 May 15;32(10):1493-501. doi: 10.1093/bioinformatics/btw018. Epub 2016 Jan 14. PMID: 26773131; PMCID: PMC4866522.
+3.Weissbrod, O. et al. Functionally informed fine-mapping and polygenic localization of complex trait heritability. Nat Genet 52, 1355–1363 (2020). https://doi.org/10.1038/s41588-020-00735-5.
+4.Benner, C. et al. Prospects of fine-papping trait-associated genomic regions by using summary statistics from genome-wide association studies. Am. J. Hum. Genet. (2017).
+5.Machiela MJ, Chanock SJ. LDlink: a web-based application for exploring population-specific haplotype structure and linking correlated alleles of possible functional variants. Bioinformatics. 2015 Jul 2.
 # Notes
 
-Add image:
-```{r, out.width='100%', out.height='200%', fig.align='center', fig.cap='Fig 5', echo = FALSE, eval=FALSE}
-knitr::include_graphics('')
-```

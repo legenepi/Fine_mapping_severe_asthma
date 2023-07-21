@@ -3,8 +3,8 @@
 #PBS -N SuSie
 #PBS -j oe
 #PBS -o SuSie_log
-#PBS -l walltime=10:0:0
-#PBS -l vmem=50gb
+#PBS -l walltime=3:0:0
+#PBS -l vmem=40gb
 #PBS -l nodes=1:ppn=4
 #PBS -d .
 #PBS -W umask=022
@@ -22,9 +22,9 @@ module load plink2
 #mkdir ${PATH_finemapping}/output/susie
 
 #Input data:
-#for line in {12..14}
+line=13
+#for line in {2..14}
 #do
-line=6
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_merged)
 start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_merged)
@@ -84,10 +84,10 @@ end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_m
 #    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
 #    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.jpeg
 
-#Rscript src/credset_susie.R \
-#    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
-#    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
-#    ${PATH_finemapping}/output/susie/susie_credset.${SNP}.$chr.$start.$end
+Rscript src/credset_susie.R \
+    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
+    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
+    ${PATH_finemapping}/output/susie/susie_credset.${SNP}.$chr.$start.$end
 
 #for 5_rs2188962_rs152815_130026218_132770805, 17:38073838_CCG_C 17 38073838 37073838 39073838:
 Rscript src/Susie_trouble_shooting.R \
@@ -96,8 +96,18 @@ Rscript src/Susie_trouble_shooting.R \
     ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
     ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.jpeg
 
+awk -F "\t" '{print $6}' ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txtcredset | \
+    tr , '\n' | tail -n +2 > ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.credset.indx
+
+awk -F "\t" '$1 == 1 {print $6}' ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txtcredset | \
+    tr , '\n' | wc -l
+
+awk -F "\t" '$1 == 2 {print $6}' ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txtcredset | \
+    tr , '\n' | wc -l
+
 Rscript src/credset_susie_troubleshooting.R \
     ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.txt \
+    ${PATH_finemapping}/output/susie/susie_${chr}_${SNP}_${start}_${end}.credset.indx \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
     ${PATH_finemapping}/output/susie/susie_credset.${SNP}.$chr.$start.$end
 
