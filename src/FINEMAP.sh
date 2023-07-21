@@ -139,6 +139,7 @@ locus="17_17:38073838_CCG_C_37073838_39073838"
 Rscript src/finemap_plot.R $locus
 
 #Merge credset into a unique file for Finemapping.xlsx in Report:
+cd ${PATH_finemapping}/output/finemap/
 head -n 1 ${PATH_finemapping}/output/finemap/finemap_credset_2_rs12470864_101926362_103926362.txt \
     > ${PATH_finemapping}/output/finemap/finemap_all_credset.txt && \
     tail -n +2 -q ${PATH_finemapping}/output/finemap/finemap_credset_*.txt >> ${PATH_finemapping}/output/finemap/finemap_all_credset.txt

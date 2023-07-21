@@ -113,18 +113,47 @@ Rscript src/credset_susie_troubleshooting.R \
 
 #done
 
+#Merge all the credible set:
+cd ${PATH_finemapping}/output/susie/
+#rsid	chromosome	position	allele1	allele2 vars.variable_prob
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs705705.12.55935504.56935504 \
+    > ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs3024971.12.56993727.57993727 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $1, $2, $3, $4, $5, $10}' susie_credset.17:38073838_CCG_C.17.37073838.39073838 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs12470864.2.101926362.103926362 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs6761047.2.241692858.243692858 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs778801698.3.49024027.51024027 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs1837253.5.109401872.111401872 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs7824394.8.80292599.82292599 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs992969.9.5209697.7209697 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs10160518.11.75296671.77296671 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs17293632.15.66442596.68442596 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $9, $10, $11, $12, $13, $2}' susie_credset.rs201499805_rs1444789.10.8042744.10064361 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt && \
 
+awk '{print $1, $2, $3, $4, $5, $10}' susie_credset.rs2188962_rs152815.5.130026218.132770805 | tail -n +2 \
+    >> ${PATH_finemapping}/output/susie/susie_all_credset.txt
 
 
 

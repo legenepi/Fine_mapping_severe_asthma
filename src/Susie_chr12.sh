@@ -91,11 +91,6 @@ done
 
 
 
-
-
-
-
-
 #if there is some NAs in the genotype matrix (keep it because it is a nice script)
 #awk '{ lines[NR] = $0; for (i = 1; i <= NF; i++) if ($i == "NA") skip[i] = 1;} END { for (i = 1; i <= NR; i++) {
 #    nf = split(lines[i], fields);
