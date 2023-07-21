@@ -23,7 +23,7 @@ sumstat <- read.table(args[2])
 print("Running Susie...")
 
 #coverage default is 0.95:
-fitted_rss <- susie_rss(z = sumstat$V1, R = data.cor, L = 10)
+fitted_rss <- susie_rss(z = sumstat$V1, R = data.cor, L = 10, n=46086)
 
 summary(fitted_rss)$cs
 
