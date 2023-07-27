@@ -14,5 +14,6 @@ colnames(fm.snp)[2] <- "snpid"
 gwas_fm <- left_join(fm.snp,gwas,by="snpid")
 gwas_fm$credset <- cumsum(gwas_fm$prob)
 gwas_fm_credset <- gwas_fm %>% filter(credset <= 0.95559 | prob >= 0.95559)
-gwas_fm_credset_digest <- gwas_fm_credset %>% select(c(index,snpid,chromosome,position,allele1,allele2,prob,credset))
+gwas_fm_credset$locus <- as.character(locus)
+gwas_fm_credset_digest <- gwas_fm_credset %>% select(c(locus,snpid,chromosome,position,allele1,allele2,prob,credset))
 fwrite(gwas_fm_credset_digest,paste0(fm.path,"credset_",locus,".txt"),quote=FALSE,row.names=FALSE,col.names=T,na="NA")
