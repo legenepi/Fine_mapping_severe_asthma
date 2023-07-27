@@ -20,6 +20,9 @@ module load plink2
 ##output folder:
 #mkdir ${PATH_finemapping}/output/finemap_replicated_suggestive
 
+##set working directory:
+#cd ${PATH_finemapping}
+
 ##replicated suggestive variants for fine-mapping:
 #awk -F ';' '{print $1}' /home/n/nnp5/PhD/PhD_project/Post_GWAS/output/meta_analysis_bonferroni_Nsuggestive_replicated | \
 #    grep -w -F -f - /home/n/nnp5/PhD/PhD_project/Post_GWAS/output/UKBiobank_severeasthma_sentinel_suggestive_to_replicate.txt | \
@@ -71,7 +74,7 @@ module load plink2
 
 ##data.z:
 #rsid chromosome position allele1 allele2
-for line in {8..21}
+for line in {1..21}
 do
 SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive)
 chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive)
@@ -88,41 +91,37 @@ end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_m
 #echo "input/ldstore_chr${chr}_${SNP}.z;/scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen;/scratch/gen1/nnp5/Fine_mapping/tmp_data/sevasthma_chr${chr}_v3.bgen.bgi;input/ldstore.sample;input/ldstore_chr${chr}_${SNP}.bdose;input/ldstore_chr${chr}_${SNP}.bcor;input/ldstore_chr${chr}_${SNP}.ld;46086;input/ldstore.incl" \
 #    >> ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.data
 
-cd ${PATH_finemapping}
+
 #ldstore2:
-/home/n/nnp5/software/ldstore_v2.0_x86_64/ldstore_v2.0_x86_64 \
-    --in-files ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.data \
-    --write-bcor \
-    --write-bdose \
-    --bdose-version 1.1
+#/home/n/nnp5/software/ldstore_v2.0_x86_64/ldstore_v2.0_x86_64 \
+#    --in-files ${PATH_finemapping}/input/ldstore_chr${chr}_${SNP}.data \
+#    --write-bcor \
+#    --write-bdose \
+#    --bdose-version 1.1
 
 #master file for FINEMAP: semicolon-delimiter text file:
 # #NB:The order of the SNPs in the dataset.ld must correspond to the order of SNPs in dataset.z.
-cd ${PATH_finemapping}
-echo "z;bcor;snp;config;cred;log;n_samples" > ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
-echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.snp;output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.config;output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.cred;output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.log;46086" \
-    >> ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
+#echo "z;bcor;snp;config;cred;log;n_samples" > ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
+#echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.snp;output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.config;output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.cred;output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.log;46086" \
+#    >> ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z
 
 
 #finemap:
-/home/n/nnp5/software/finemap_v1.4.1_x86_64/finemap_v1.4.1_x86_64 \
-    --sss \
-    --n-causal-snps 10 \
-    --in-files ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z \
-    --log
+#/home/n/nnp5/software/finemap_v1.4.1_x86_64/finemap_v1.4.1_x86_64 \
+#    --sss \
+#    --n-causal-snps 10 \
+#    --in-files ${PATH_finemapping}/input/finemap_chr${chr}_${SNP}.z \
+#    --log
+
+#Find credset:
+Rscript ${PATH_finemapping}/src/finemapping_replicated_suggestive/credset_FINEMAP.R ${chr}_${SNP}_${start}_${end}
 
 done
 
-#Find credset:
-#log10bf column contains the log10 Bayes factors.
-#The Bayes factor quantifies the evidence that the
-#i-th SNP is causal with log10 Bayes factors greater than 2 reporting considerable evidence
-
-#six columns interpreted as SNPID, rsid, chromosome, position, first and second alleles.
 
 #Merge credset into a unique file for Finemapping.xlsx in Report:
 #cd ${PATH_finemapping}/output/finemap_replicated_suggestive
-#head -n 1 ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_.txt \
+#head -n 1 ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_2_rs12470864_102426362_103426362.txt \
 #    > ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_all_credset.txt && \
 #    tail -n +2 -q ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_*.txt \
 #    >> ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_all_credset.txt
