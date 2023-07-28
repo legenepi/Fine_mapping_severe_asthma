@@ -29,6 +29,12 @@ Fine mapping of replicated suggestive sentinel variants discovered in the severe
 Code: src/bgenix_index.sh
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/bgenix_index.sh'), eval=FALSE}
 ```
+Code: src/finemapping_replicated_suggestive/Merge_loci_for_finemapping.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/Merge_loci_for_finemapping.sh'), eval=FALSE}
+```
+Code: src/finemapping_replicated_suggestive/Merge_loci_for_finemapping.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/Merge_loci_for_finemapping.R'), eval=FALSE}
+```
 Code: src/finemapping_replicated_suggestive/FINEMAP_replicated_suggestive.sh
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/FINEMAP_replicated_suggestive.sh'), eval=FALSE}
 ```
@@ -48,9 +54,11 @@ Code: src/finemapping_replicated_suggestive/credset_susie.R
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/credset_susie.R'), eval=FALSE}
 ```
 
-Two different fine-mapping tools were implemented, SuSiE [1] and FINEMAP [2].
+Two different fine-mapping tools were implemented, SuSiE-RSS [1] and FINEMAP [2]. SuSiE-RSS (stands for 'Sum of Single Effects - Regression with summary statistics') runs finemapping analysis using summary statistics and z-score as sufficient statistics; it uses Bayesian Stepwise Selection algorithm [3] that iteratively tests for each possible number of multiple causal varaints in the locus, up to ten. FINEMAP uses summary statistics as well and it implements a shotgun stochastic search algorithm allowing the investigation of multiple causal variant in one locus up to ten as well.
 <br>
-For both tools, I investigated the genomic regions of 1Mb centred on the replicated variant, I allowed up to 10 causal variants, and I tested for 46,086 individuals with in-sample LD matrix created with LDstore2 [4] for FINEMAP, plink2 [5] and R for SuSiE. If a software found multiple credible sets for one region, I included all of them. If a software failed, I considered as valid the credible set found by the other tool. 
+Genomic loci were defined as a region of 1Mb centred on the replicated suggestive variants; if loci overlapped, they were merged together and analysed as a unique region. For both tools, I allowed up to 10 causal variants, and I tested for 46,086 individuals with in-sample LD matrix created with LDstore2 [4] for FINEMAP, plink2 [5] and R for SuSiE. If a software found multiple credible sets for one region, I included all of them. If a software failed, I considered as valid the credible set found by the other tool.
+<br>
+
 <br>
 To assess the final number of variants to follow-up, I followed an approach as taken by Kanai M. et al. [6]: consider the credible set variants found in both tools; keep variants whose SuSiE's PIP and FINEMAP's PIP differ less than 0.05; calculate an average PIP for each variant. Kanai M. et al., found that variants with a consistent PIP difference (greater than 0.05) denoted poor enirchment ffor known functional annotations and more often resulted in false positives [6].
 
@@ -58,12 +66,12 @@ To assess the final number of variants to follow-up, I followed an approach as t
 
 
 # Conclusion
-Two different tools, SuSiE and FINEMAP, were used to fine-map 21 variants. After validation of the credible set I obtained XXX
+Two different tools, SuSiE and FINEMAP, were used to fine-map the 21 replicated suggestive variants. After validation of the credible set I obtained XXX
 
 # References
 1.Zou Y. et al., Fine-mapping from summary data with the "Sum of Single Effects" model. PLoS Genet. 2022 Jul 19;18(7):e1010299. doi: 10.1371/journal.pgen.1010299. PMID: 35853082; PMCID: PMC9337707.
-2.Benner C. et al., FINEMAP: efficient variable selection using summary data from genome-wide association studies. Bioinformatics. 2016 May 15;32(10):1493-501. doi: 10.1093/bioinformatics/btw018. Epub 2016 Jan 14. PMID: 26773131; PMCID: PMC4866522.
-3.Weissbrod, O. et al. Functionally informed fine-mapping and polygenic localization of complex trait heritability. Nat Genet 52, 1355–1363 (2020). https://doi.org/10.1038/s41588-020-00735-5.
+2.C.Benner, Refining fine-mapping: effect sizes and regional heritability, bioRxiv 318618, doi:https://doi.org/10.1101/318618
+3.Gao Wang et al., A Simple New Approach to Variable Selection in Regression, with Application to Genetic Fine Mapping, Journal of the Royal Statistical Society Series B: Statistical Methodology, December 2020, doi:https://doi.org/10.1111/rssb.12388
 4.Benner, C. et al. Prospects of fine-papping trait-associated genomic regions by using summary statistics from genome-wide association studies. Am. J. Hum. Genet. (2017).
 5.Christopher C Chang et al., Second-generation PLINK: rising to the challenge of larger and richer datasets, GigaScience, December 2015, doi:https://doi.org/10.1186/s13742-015-0047-8
 6.Kanai M. et al., Insights from complex trait fine-mapping across diverse populations, medRxiv 2021.09.03.21262975; doi: https://doi.org/10.1101/2021.09.03.21262975.
