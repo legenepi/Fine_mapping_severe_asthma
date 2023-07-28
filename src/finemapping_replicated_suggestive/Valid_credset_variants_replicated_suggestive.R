@@ -6,15 +6,17 @@
 #PIP difference smaller than 0.05
 #(as per Masai et al. : if PIP difference greater, more chance that variants are false positive and show poor enrichment for known functional annotations)
 
+##Run as:
+#Rscript Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/Valid_credset_variants_replicated_suggestive.R \
+#Fine_mapping_severe_asthma/output/susie_replsugg_all_credset.txt \
+#Fine_mapping_severe_asthma/output/finemap_replsugg_all_credset.txt
+
 library(tidyverse)
 library(data.table)
 library(dplyr)
 args = commandArgs(trailingOnly=TRUE)
 
-#run as:
-#Rscript Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/Valid_credset_variants_replicated_suggestive.R \
-#Fine_mapping_severe_asthma/output/susie_replsugg_all_credset.txt \
-#Fine_mapping_severe_asthma/output/finemap_replsugg_all_credset.txt
+
 
 susie <- fread(arg[1]) %>% select(rsid,chromosome,position,allele1,allele2,vars.variable_prob)
 susie <- susie %>% rename(snpid=rsid, PIP_susie=vars.variable_prob)

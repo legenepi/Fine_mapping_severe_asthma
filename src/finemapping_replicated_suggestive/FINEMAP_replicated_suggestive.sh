@@ -21,7 +21,7 @@ module load plink2
 #mkdir ${PATH_finemapping}/output/finemap_replicated_suggestive
 
 ##set working directory:
-#cd ${PATH_finemapping}
+cd ${PATH_finemapping}
 
 ##replicated suggestive variants for fine-mapping:
 #awk -F ';' '{print $1}' /home/n/nnp5/PhD/PhD_project/Post_GWAS/output/meta_analysis_bonferroni_Nsuggestive_replicated | \
@@ -74,12 +74,12 @@ module load plink2
 
 ##data.z:
 #rsid chromosome position allele1 allele2
-for line in {1..21}
+for line in {1..18}
 do
-SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive)
-chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive)
-start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive)
-end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive)
+SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
 
 ##remove the multiallelic SNPs, as done for SuSiE, so start from the same number of variants:
 awk -v chr_idx=$chr 'NR==1; NR > 1 {if ($2 == chr_idx) print}' ${PATH_finemapping}/input/sevasthma.z | \
@@ -119,9 +119,13 @@ Rscript ${PATH_finemapping}/src/finemapping_replicated_suggestive/credset_FINEMA
 done
 
 
-#Merge credset into a unique file for Finemapping.xlsx in Report:
-#cd ${PATH_finemapping}/output/finemap_replicated_suggestive
+##Merge credset into a unique file:
 #head -n 1 ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_2_rs12470864_102426362_103426362.txt \
 #    > ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_all_credset.txt && \
 #    tail -n +2 -q ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_*.txt \
-#    >> ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_all_credset.txt
+#    >> ${PATH_finemapping}/output/finemap_replsugg_all_credset.txt
+
+##Remove intermediate files:
+#${PATH_finemapping}/input/ldstore*
+#${PATH_finemapping}/input/finemap_chr*.z
+#${PATH_finemapping}/output/finemap_replicated_suggestive/*
