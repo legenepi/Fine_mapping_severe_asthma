@@ -103,10 +103,10 @@ Rscript src/finemapping_replicated_suggestive/credset_susie.R \
 done
 
 #Merge credset into a unique file:
-#head -n 1 ${PATH_OUT}/susie_replsugg_2_rs12470864_102426362_103426362.txt \
-#    > ${PATH_finemapping}/output/susie_replicated_suggestive/finemap_replsugg_all_credset.txt && \
-#    tail -n +2 -q ${PATH_OUT}/susie_replsugg_credset_*.txt \
-#    >> ${PATH_finemapping}/output/susie_replsugg_all_credset.txt
+head -n 1 ${PATH_OUT}/susie_replsugg_credset.rs12470864.2.102426362.103426362 \
+    > ${PATH_finemapping}/output/susie_replsugg_all_credset.txt && \
+    tail -n +2 -q ${PATH_OUT}/susie_replsugg_credset.*[0-9] \
+    >> ${PATH_finemapping}/output/susie_replsugg_all_credset.txt
 
 ##Remove intermediate files:
 #/scratch/gen1/nnp5/Fine_mapping/tmp_data/*_no_ma_GWAS_sumstats.txt
@@ -115,3 +115,5 @@ done
 #/scratch/gen1/nnp5/Fine_mapping/tmp_data/*.raw
 #/scratch/gen1/nnp5/Fine_mapping/tmp_data/*_no_ma_snps.txt
 #/scratch/gen1/nnp5/Fine_mapping/tmp_data/*_no_ma_z_scores.txt
+#${PATH_OUT}/susie_replsugg_*.credset.
+#${PATH_OUT}/susie_replsugg_*.txtcredset

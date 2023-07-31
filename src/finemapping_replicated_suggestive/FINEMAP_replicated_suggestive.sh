@@ -120,10 +120,10 @@ done
 
 
 ##Merge credset into a unique file:
-#head -n 1 ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_2_rs12470864_102426362_103426362.txt \
-#    > ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_all_credset.txt && \
-#    tail -n +2 -q ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_*.txt \
-#    >> ${PATH_finemapping}/output/finemap_replsugg_all_credset.txt
+head -n 1 ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_2_rs12470864_102426362_103426362.txt \
+    > ${PATH_finemapping}/output/finemap_replsugg_all_credset.txt && \
+   tail -n +2 -q ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_*.txt \
+    >> ${PATH_finemapping}/output/finemap_replsugg_all_credset.txt
 
 ##Remove intermediate files:
 #${PATH_finemapping}/input/ldstore*
