@@ -1,10 +1,14 @@
 #!/bin/bash
 
+#Rationale:
+#Identify valid credible set variants found in finemap only
+
 PATH_OUT="/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/"
 
 module unload R/4.2.1
 module load R/4.1.0
 
+##FINEMAP-ONLY:
 awk -v OFS=',' '{print $1, $2, $3, $4, $5, $6}' ${PATH_OUT}/susie_replsugg_all_credset.txt | \
     grep -v -w -F -f - ${PATH_OUT}/finemap_replsugg_all_credset.txt \
     > ${PATH_OUT}/finemap_replsugg_only_credset
@@ -17,9 +21,20 @@ chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fin
 start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
 end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
 
+if [[ ${chr} -lt 10 ]]
+then
 awk -F "," -v OFS=' ' '{print $2, "0"$3, $4, $5, $6}' ${PATH_OUT}/finemap_replsugg_only_credset | \
     grep -o -n -w -F -f - /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | \
     awk -F ":" '{print "V"$1, $2}' > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_finemap_only_vars_susie_idx
+fi
+
+if [[ ${chr} -gt 9 ]]
+then
+awk -F "," -v OFS=' ' '{print $2, $3, $4, $5, $6}' ${PATH_OUT}/finemap_replsugg_only_credset | \
+    grep -o -n -w -F -f - /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | \
+    awk -F ":" '{print "V"$1, $2}' > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_finemap_only_vars_susie_idx
+fi
+
 
 Rscript src/finemapping_replicated_suggestive/Valid_NOTshared_finemaponly_credset_variants_replicated_suggestive.R \
     ${PATH_OUT}/finemap_replicated_suggestive/finemap_replsugg_credset_${chr}_${SNP}_${start}_${end}.txt \
@@ -29,7 +44,31 @@ done
 
 #how many valid finemap-only credset SNPs for locus ?
 awk '{print $1}' ${PATH_OUT}/repl_sugg_NOTshared_finemaponly_valid_credset.txt | sort | uniq -c
+#2 12_rs705705_55935504_56935504
+#58 12_rs73107993_47695873_48695873
+#53 15_rs11071559_60569988_61569988
+#19 17_17:38073838_CCG_C_37573838_38573838
 #23 2_rs12470864_102426362_103426362
 #27 3_rs35570272_32547662_33547662
 #1 6_rs148639908_90463614_91463614
 #1 8_rs7824394_80792599_81792599
+
+##SUSIE-ONLY:
+awk -F "," -v OFS='\t' '{print $1, $2, $3, $4, $5, $6}' ${PATH_OUT}/finemap_replsugg_all_credset.txt | \
+    grep -v -w -F -f - ${PATH_OUT}/susie_replsugg_all_credset.txt \
+    > ${PATH_OUT}/susie_replsugg_only_credset
+
+for line in {1..18}
+do
+##Input data:
+SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+
+Rscript src/finemapping_replicated_suggestive/Valid_NOTshared_susieonly_credset_variants_replicated_suggestive.R \
+    ${PATH_OUT}/susie_replsugg_only_credset \
+    ${PATH_OUT}/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.snp
+done
+#how many valid finemap-only credset SNPs for locus ?
+awk '{print $1}' ${PATH_OUT}/repl_sugg_NOTshared_susieonly_valid_credset.txt | sort | uniq -c
