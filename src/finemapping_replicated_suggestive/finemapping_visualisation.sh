@@ -21,24 +21,27 @@ cat ${PATH_finemapping}/output/replsugg_shared_valid_credset.txt ${PATH_finemapp
 cat ${PATH_finemapping}/output/replsugg_valid_credset.txt.tmp ${PATH_finemapping}/output/repl_sugg_NOTshared_susieonly_valid_credset.txt \
     > ${PATH_finemapping}/output/replsugg_valid_credset.txt
 rm ${PATH_finemapping}/output/replsugg_valid_credset.txt.tmp
-cp ${PATH_finemapping}/output/replsugg_valid_credset.txt
+cp ${PATH_finemapping}/output/replsugg_valid_credset.txt /data/gen1/UKBiobank_500K/severe_asthma/Noemi_PhD/data/
 
-###use FAVOR webtool:
-#https://favor.genohub.org/
-awk 'NR > 1 {print $2}' ${PATH_finemapping}/output/replsugg_valid_credset.txt | \
-    grep '^rs*' > ${PATH_finemapping}/input/replsugg_credset_rsid.txt
-
+##FAVOR:
 ##liftover for vars with no rsid:
-awk 'NR > 1 {print $2}' ${PATH_finemapping}/output/replsugg_valid_credset.txt | \
-    grep -v '^rs*' | awk -F ':|_' '{print "chr"$1,$2}'
-awk 'NR > 1 {print $2}' ${PATH_finemapping}/output/replsugg_valid_credset.txt | \
-    grep -v '^rs*' | awk -F ':|_' '{print $3"-"$4}' \
+awk 'NR > 1 {print "chr"$3,$4,$4+1}' ${PATH_finemapping}/output/replsugg_valid_credset.txt \
+    > ${PATH_finemapping}/input/replsugg_valid_credset_input_liftover_b37
+
+awk 'NR > 1 {print $5"-"$6}' ${PATH_finemapping}/output/replsugg_valid_credset.txt \
     > /scratch/gen1/nnp5/Fine_mapping/tmp_data/alleles_for_favor_input
-awk '{print $1"-"$2}' ${PATH_finemapping}/input/hglft_genome_08_08_23_credsetvars.bed | sed 's/chr//g' | \
+
+awk '{print $1"-"$2}' ${PATH_finemapping}/input/hglft_genome_credset_vars_08_08_2023.bed | sed 's/chr//g' | \
     paste -d "-" - /scratch/gen1/nnp5/Fine_mapping/tmp_data/alleles_for_favor_input \
     > ${PATH_finemapping}/input/replsugg_credset_chrpos38.txt
+###use FAVOR webtool:
+#https://favor.genohub.org/
 
+##digest FAVOR files:
+awk -F "," -v -OFS='\t' '{print $1, $2, $3, $8, $9, $10, $11, $12}' ${PATH_finemapping}/input/FAVOR_credset_chrpos38_2023_08_08.csv \
+    > ${PATH_finemapping}/input/FAVOR_credset_annotations_digest_08_08_23.csv
 
+##make PIP plot with functional annotation:
 
 
 #cd /home/n/nnp5/software
