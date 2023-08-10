@@ -15,7 +15,6 @@ module load R/4.1.0
 cd ${PATH_finemapping}
 
 #Functional annotation:
-
 cat ${PATH_finemapping}/output/replsugg_shared_valid_credset.txt ${PATH_finemapping}/output/repl_sugg_NOTshared_finemaponly_valid_credset.txt \
     > ${PATH_finemapping}/output/replsugg_valid_credset.txt.tmp
 cat ${PATH_finemapping}/output/replsugg_valid_credset.txt.tmp ${PATH_finemapping}/output/repl_sugg_NOTshared_susieonly_valid_credset.txt \
@@ -38,14 +37,17 @@ awk '{print $1"-"$2}' ${PATH_finemapping}/input/hglft_genome_credset_vars_08_08_
 #https://favor.genohub.org/
 
 ##digest FAVOR files:
-awk -F "," -v -OFS='\t' '{print $1, $2, $3, $8, $9, $10, $11, $12}' ${PATH_finemapping}/input/FAVOR_credset_chrpos38_2023_08_08.csv \
+awk -F "," '{print $1, $2, $3, $8, $9, $10, $11, $12}' ${PATH_finemapping}/input/FAVOR_credset_chrpos38_2023_08_08.csv \
     > ${PATH_finemapping}/input/FAVOR_credset_annotations_digest_08_08_23.csv
 
 ##make PIP plot with functional annotation:
 
-
-#cd /home/n/nnp5/software
-#git clone https://github.com/Geeketics/LocusZooms.git
+for line in {1..18}
+do
+SNP=$(awk -v row="$line" ' NR == row {print $1 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+chr=$(awk -v row="$line" ' NR == row {print $2 } ' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+start=$(awk -v row="$line" 'NR == row {print $4}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
+end=$(awk -v row="$line" 'NR == row {print $5}' ${PATH_finemapping}/input/fine_mapping_regions_replicated_suggestive_input)
 
 #create R2 according to leading p-value:
 module load plink2
@@ -54,14 +56,36 @@ plink2 \
     --sample ${PATH_finemapping}/input/ldstore.sample \
     --make-bed --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}
 
+#locus="11_rs10160518_75796671_76796671"
+#finemap_snp_file="output/finemap_replicated_suggestive/finemap_replsugg_11_rs10160518_75796671_76796671.snp"
+snp_lead=$(Rscript src/finemapping_replicated_suggestive/PIP_plot_with_funcannot.R \
+    ${chr}_${SNP}_${start}_${end} \
+    output/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.snp)
+
 module unload plink2/2.00a
 module load plink/1.90
 plink --bfile /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP} \
     --extract /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_snps.txt \
-    --allow-no-sex --r2 inter-chr --ld-snp ${SNP} --ld-window-r2 0 \
+    --allow-no-sex --r2 inter-chr --ld-snp ${snp_lead} --ld-window-r2 0 \
     --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_ld_file
 
+Rscript src/finemapping_replicated_suggestive/PIP_plot_with_funcannot_pt2.R \
+    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_ld_file.ld \
+    output/plots/finemapping_plot_${chr}_${SNP}_${start}_${end}.pdf \
+    ${chr}_${SNP}_${start}_${end}
+
+
+
+
+
+
+####
+
+
+###experiment using LocusZooms.git repostiory:
 #in R:
+#cd /home/n/nnp5/software
+#git clone https://github.com/Geeketics/LocusZooms.git
 # load necessary files into R
 library(tidyverse)
 library(data.table)
