@@ -53,6 +53,19 @@ Code: src/finemapping_replicated_suggestive/Susie_replicated_suggestive.R
 Code: src/finemapping_replicated_suggestive/credset_susie.R
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/credset_susie.R'), eval=FALSE}
 ```
+Code: src/finemapping_replicated_suggestive/finemapping_visualisation.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/finemapping_visualisation.sh'), eval=FALSE}
+```
+Code: src/finemapping_replicated_suggestive/finemapping_visualisation.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/finemapping_visualisation.sh'), eval=FALSE}
+```
+Code: src/finemapping_replicated_suggestive/PIP_plot_with_funcannot.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/PIP_plot_with_funcannot.R'), eval=FALSE}
+```
+Code: src/finemapping_replicated_suggestive/PIP_plot_with_funcannot_pt2.R
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/PIP_plot_with_funcannot_pt2.R'), eval=FALSE}
+```
+
 
 Two different fine-mapping tools were implemented, SuSiE-RSS [1] and FINEMAP [2]. SuSiE-RSS (stands for 'Sum of Single Effects - Regression with summary statistics') runs finemapping analysis using summary statistics and z-score as sufficient statistics; it uses Bayesian Stepwise Selection algorithm [3] that iteratively tests for each possible number of multiple causal varaints in the locus, up to ten. FINEMAP uses summary statistics as well and it implements a shotgun stochastic search algorithm allowing the investigation of multiple causal variant in one locus up to ten as well.
 <br>
@@ -60,21 +73,50 @@ Genomic loci were defined as a region of 1Mb centred on the replicated suggestiv
 <br>
 
 <br>
-To assess the final number of variants to follow-up, I followed an approach as taken by Kanai M. et al. [6]: consider the credible set variants found in both tools; keep variants whose SuSiE's PIP and FINEMAP's PIP differ less than 0.05; calculate an average PIP for each variant. Kanai M. et al., found that variants with a consistent PIP difference (greater than 0.05) denoted poor enirchment ffor known functional annotations and more often resulted in false positives [6].
+To assess the final number of variants to follow-up, I followed an approach as taken by Kanai M. et al. [6]: consider the credible set variants found in both tools; keep variants whose SuSiE's PIP and FINEMAP's PIP differ less than 0.05; calculate an average PIP for each variant. Kanai M. et al. found that variants with a consistent PIP difference (greater than 0.05) denoted poor enirchment for known functional annotations and more often resulted in false positives [6].
 
 # Results
+After merging regions, I obtained 18 genomic loci that were investigated for fine-mapping. Using FINEMAP, I identified variants for all the credible sets while SuSiE identified credible set variants for thirteen loci. After validation of credible sets variants, 17 loci were identified with a total of 616 good quality variants for functional analysis.
+```{r, echo=FALSE}
+library(knitr)
+library(readxl)
+df  <-  read_excel("/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/report/Finemapping_repl_sugg_vars.xlsx", sheet="Credible_set", skip = 1, col_names = TRUE)
+kable(df)
+```
+Fine-mapping plots for each loci with information on LD, variant annotation, and surrounding genes, can be seen and downloaded below. Credible set variants are identified by the red circle, variant ID is for to identidy the variants with R2 > 0.95 with respect the leading fine-mapping SNP (variant with highest posterior inclusion probability-PIP).
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_2_rs12470864_102426362_103426362.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_2_rs6761047_242192858_243192858.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_3_rs35570272_32547662_33547662.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_5_rs1837253_rs3806932_109901872_110905675.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_5_rs2188962_rs848_131270805_132496500.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_6_rs9271365_32086794_33086794.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_6_rs148639908_90463614_91463614.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_8_rs7824394_80792599_81792599.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_9_rs992969_5709697_6709697.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_10_rs201499805_rs1444789_8542744_9564361.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_11_rs10160518_75796671_76796671.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_12_rs73107993_47695873_48695873.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_12_rs705705_55935504_56935504.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_15_rs11071559_60569988_61569988.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_15_rs17293632_66942596_67942596.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_16_rs3024619_26864806_27864806.pdf){width=100% height=400}
+![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_17_17:38073838_CCG_C_37573838_38573838.pdf){width=100% height=400}
+
 
 
 # Conclusion
-Two different tools, SuSiE and FINEMAP, were used to fine-map the 21 replicated suggestive variants. After validation of the credible set I obtained XXX
+Two different tools, SuSiE and FINEMAP, were used to fine-map the 21 replicated suggestive variants (18 merged regions). After validation of the credible sets, I obtained 616 fine-mapped variants to take forward for variant-to-gene function analyses.
 
 # References
 1.Zou Y. et al., Fine-mapping from summary data with the "Sum of Single Effects" model. PLoS Genet. 2022 Jul 19;18(7):e1010299. doi: 10.1371/journal.pgen.1010299. PMID: 35853082; PMCID: PMC9337707.
-2.C.Benner, Refining fine-mapping: effect sizes and regional heritability, bioRxiv 318618, doi:https://doi.org/10.1101/318618
+<br>
+2.C.Benner, Refining fine-mapping: effect sizes and regional heritability, bioRxiv 318618, doi:https://doi.org/10.1101/
+<br>
 3.Gao Wang et al., A Simple New Approach to Variable Selection in Regression, with Application to Genetic Fine Mapping, Journal of the Royal Statistical Society Series B: Statistical Methodology, December 2020, doi:https://doi.org/10.1111/rssb.12388
+<br>
 4.Benner, C. et al. Prospects of fine-papping trait-associated genomic regions by using summary statistics from genome-wide association studies. Am. J. Hum. Genet. (2017).
+<br>
 5.Christopher C Chang et al., Second-generation PLINK: rising to the challenge of larger and richer datasets, GigaScience, December 2015, doi:https://doi.org/10.1186/s13742-015-0047-8
+<br>
 6.Kanai M. et al., Insights from complex trait fine-mapping across diverse populations, medRxiv 2021.09.03.21262975; doi: https://doi.org/10.1101/2021.09.03.21262975.
-
-# Notes
 
