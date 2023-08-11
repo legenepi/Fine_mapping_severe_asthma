@@ -11,10 +11,8 @@ library(dplyr)
 args <- commandArgs(T)
 
 #Args:
-locus_id <- args[1]
-#locus <- credset_annot %>% filter(locus==locus_id)
 #the .snp file from finemap
-finampping_snps_file <- args[2]
+finampping_snps_file <- args[1]
 finemapping_snps <- fread(finampping_snps_file)
 finemapping_snps <-  finemapping_snps %>% rename(position_b37=position,snpid=rsid)
 
@@ -53,8 +51,9 @@ finemapping_snps_credset_annot <- left_join(finemapping_snps,credset_annot,by=c(
 finemapping_snps_credset_annot <- finemapping_snps_credset_annot %>% select(chromosome,position_b37,prob,Functional_annotation,credset,snpid)
 finemapping_snps_credset_annot <- finemapping_snps_credset_annot %>% mutate(Functional_annotation=ifelse(is.na(finemapping_snps_credset_annot$Functional_annotation), "unknown",finemapping_snps_credset_annot$Functional_annotation))
 finemapping_snps_credset_annot$Functional_annotation <- as.factor(finemapping_snps_credset_annot$Functional_annotation)
-
+finemapping_snps_credset_annot <- finemapping_snps_credset_annot %>% mutate(credset=ifelse(is.na(finemapping_snps_credset_annot$credset), 0, finemapping_snps_credset_annot$credset))
 fwrite(finemapping_snps_credset_annot,"/scratch/gen1/nnp5/Fine_mapping/tmp_data/finemapping_snps_credset_annot",quote=F,sep="\t",row.names=F,col.names=T)
 
 ##in bash, run plink to create the R2 according to variants with maximum PIP --> extract the leading SNP:
-as.character(finemapping_snps_credset_annot[finemapping_snps_credset_annot$prob == max(finemapping_snps_credset_annot$prob),'snpid']) %>% cat()
+finemapping_snps_credset_annot_valid <- finemapping_snps_credset_annot %>% filter(credset == 1)
+as.character(finemapping_snps_credset_annot_valid[finemapping_snps_credset_annot_valid$prob == max(finemapping_snps_credset_annot_valid$prob),'snpid']) %>% cat()
