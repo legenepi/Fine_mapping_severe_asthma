@@ -80,10 +80,10 @@ After merging regions, I obtained 18 genomic loci that were investigated for fin
 ```{r, echo=FALSE}
 library(knitr)
 library(readxl)
-df  <-  read_excel("/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/report/Finemapping_repl_sugg_vars.xlsx", sheet="Credible_set", skip = 1, col_names = TRUE)
+df  <-  read_excel("/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/report/Finemapping_repl_sugg_vars.xlsx", sheet="Credible_set_N", skip = 1, col_names = TRUE)
 kable(df)
 ```
-Fine-mapping plots for each loci with information on LD, variant annotation, and surrounding genes, can be seen and downloaded below. Credible set variants are identified by the red circle, variant ID is for to identidy the variants with R2 > 0.95 with respect the leading fine-mapping SNP (variant with highest posterior inclusion probability-PIP).
+Fine-mapping plots for each loci with information on LD, variant annotation, and surrounding genes, can be seen and downloaded below. Credible set variants are identified by the red circle, variant ID is for variants with R2 > 0.95 with respect the leading fine-mapping SNP (variant with highest posterior inclusion probability-PIP).
 ![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_2_rs12470864_102426362_103426362.pdf){width=100% height=400}
 ![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_2_rs6761047_242192858_243192858.pdf){width=100% height=400}
 ![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_3_rs35570272_32547662_33547662.pdf){width=100% height=400}
@@ -105,7 +105,7 @@ Fine-mapping plots for each loci with information on LD, variant annotation, and
 
 
 # Conclusion
-Two different tools, SuSiE and FINEMAP, were used to fine-map the 21 replicated suggestive variants (18 merged regions). After validation of the credible sets, I obtained 616 fine-mapped variants to take forward for variant-to-gene function analyses.
+Two different tools, SuSiE and FINEMAP, were used to fine-map the 21 replicated suggestive variants (18 merged regions). After validation of the credible sets, I obtained 615 fine-mapped variants to take forward for variant-to-gene function analyses.
 
 # References
 1.Zou Y. et al., Fine-mapping from summary data with the "Sum of Single Effects" model. PLoS Genet. 2022 Jul 19;18(7):e1010299. doi: 10.1371/journal.pgen.1010299. PMID: 35853082; PMCID: PMC9337707.
