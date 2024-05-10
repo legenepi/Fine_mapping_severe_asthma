@@ -6,7 +6,7 @@ suppressMessages(library(data.table))
 args = commandArgs(trailingOnly=TRUE)
 
 locus = args[1]
-gwas <- fread("/home/n/nnp5/PhD/PhD_project/REGENIE_assoc/output/maf001_broad_pheno_1_5_ratio_betase_input_mungestat")
+gwas <- fread("/data/gen1/UKBiobank_500K/severe_asthma/Noemi_PhD/data/maf001_broad_pheno_1_5_ratio_betase_input_mungestat")
 fm.path = "/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/finemap_replicated_suggestive/finemap_replsugg_"
 
 fm.snp = read.table(paste0(fm.path,locus,".snp"), as.is = T, header = T)
