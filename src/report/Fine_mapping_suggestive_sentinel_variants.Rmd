@@ -16,8 +16,6 @@ output:
 #To run this .rmd file in a terminal being in the project folder:
 #export PATH=${PATH}:/cm/shared/apps/R/deps/rstudio/bin/pandoc
 #file="./report/Fine_mapping_suggestive_sentinel_variants.Rmd"
-#module unload R/4.2.1
-#module load R/4.1.0
 #Rscript -e 'rmarkdown::render("'$file'")'
 ```
 
@@ -56,9 +54,6 @@ Code: src/finemapping_replicated_suggestive/credset_susie.R
 Code: src/finemapping_replicated_suggestive/finemapping_visualisation.sh
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/finemapping_visualisation.sh'), eval=FALSE}
 ```
-Code: src/finemapping_replicated_suggestive/finemapping_visualisation.sh
-```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/finemapping_visualisation.sh'), eval=FALSE}
-```
 Code: src/finemapping_replicated_suggestive/PIP_plot_with_funcannot.R
 ```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/finemapping_replicated_suggestive/PIP_plot_with_funcannot.R'), eval=FALSE}
 ```
@@ -83,29 +78,29 @@ library(readxl)
 df  <-  read_excel("/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/report/Finemapping_repl_sugg_vars.xlsx", sheet="Credible_set_N", skip = 1, col_names = TRUE)
 kable(df)
 ```
-Fine-mapping plots for each loci with information on LD, variant annotation, and surrounding genes, can be seen and downloaded below. Credible set variants are identified by the red circle, variant ID is for variants with R2 > 0.95 with respect the leading fine-mapping SNP (variant with highest posterior inclusion probability-PIP).
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_2_rs12470864_102426362_103426362.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_2_rs6761047_242192858_243192858.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_3_rs35570272_32547662_33547662.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_5_rs1837253_rs3806932_109901872_110905675.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_5_rs2188962_rs848_131270805_132496500.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_6_rs9271365_32086794_33086794.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_6_rs148639908_90463614_91463614.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_8_rs7824394_80792599_81792599.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_9_rs992969_5709697_6709697.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_10_rs201499805_rs1444789_8542744_9564361.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_11_rs10160518_75796671_76796671.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_12_rs73107993_47695873_48695873.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_12_rs705705_55935504_56935504.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_15_rs11071559_60569988_61569988.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_15_rs17293632_66942596_67942596.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_16_rs3024619_26864806_27864806.pdf){width=100% height=400}
-![Alt](/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/plots/finemapping_plot_17_17:38073838_CCG_C_37573838_38573838.pdf){width=100% height=400}
-
-
 
 # Conclusion
 Two different tools, SuSiE and FINEMAP, were used to fine-map the 21 replicated suggestive variants (18 merged regions). After validation of the credible sets, I obtained 615 fine-mapped variants to take forward for variant-to-gene function analyses.
+
+# Update: Fine-mapping of replicated signal rs778801698 and surrounding genomic locus.
+Code: src/bgenix_index_sbatch.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/bgenix_index_sbatch.sh'), eval=FALSE}
+```
+Code: src/Fine_mapping_chr3_rs778801698.sh
+```{r, code = readLines('/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/src/Fine_mapping_chr3_rs778801698.sh'), eval=FALSE}
+```
+
+# Conclusion - update
+We decided to exclude the fine-mapping of the HLA region, as it presents a complex LD-structure. We therefore do not include
+the varaint-to-gene mapping results for this region as well.
+<br>
+We successfully fine-mapped 17 genomic loci. We added genomic locus on chromosome 3 with sentinel variant rs778801698; in this
+locus we obtain a total of 224 in the 95% credible set variants. In this locus, the high number of putative causal variants is due to the
+presence in both FINEMAP and SuSiE of four variants (rs778801698, rs2271960, rs2271961, rs6765484) with PIP >= 1% and all the other variants with PIP lower than 1%.
+<br>
+We obtained a total of 741 putative causal variants from 17 fine-mapped genomic loci; 232 variants have PIP >= 1%.
+
+
 
 # References
 1.Zou Y. et al., Fine-mapping from summary data with the "Sum of Single Effects" model. PLoS Genet. 2022 Jul 19;18(7):e1010299. doi: 10.1371/journal.pgen.1010299. PMID: 35853082; PMCID: PMC9337707.

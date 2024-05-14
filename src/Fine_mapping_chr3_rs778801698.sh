@@ -1,4 +1,5 @@
 #!/bin/bash
+REDO, I DO NOT LIKE THE TOTAL NUMBER OF CAUSAL VARIATNS TO FOLLOW-UP: 264... TOO HIGH?
 
 #Rationale: Fine-mapping for additional replicated sentinel rs778801698 and its genomic loci.
 
@@ -73,7 +74,18 @@ echo "input/ldstore_chr${chr}_${SNP}.z;input/ldstore_chr${chr}_${SNP}.bcor;outpu
 ##Find credset:
 Rscript ${PATH_finemapping}/src/finemapping_replicated_suggestive/credset_FINEMAP.R ${chr}_${SNP}_${start}_${end}
 
+#because I did this analysis two times and i wanted to be sure that the second time I wasn't adding the credset twice:
+grep -v "3_rs778801698_49524027_50524027" ${PATH_finemapping}/output/finemap_replsugg_all_credset.txt \
+    > ${PATH_finemapping}/output/finemap_replsugg_all_credset_rs778801698.txt
+
+tail -n +2 -q ${PATH_finemapping}/output/finemap_replicated_suggestive/finemap_replsugg_credset_3_rs778801698_49524027_50524027.txt \
+    >> ${PATH_finemapping}/output/finemap_replsugg_all_credset_rs778801698.txt
+
+
+
+
 #SuSiE:
+PATH_OUT="/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/susie_replicated_suggestive"
 ##Creating region bgen
 conda activate /home/n/nnp5/miniconda3/envs/phd_env/
 cd /scratch/gen1/nnp5/Fine_mapping/tmp_data/
@@ -116,6 +128,7 @@ Rscript src/finemapping_replicated_suggestive/Susie_replicated_suggestive.R \
     ${PATH_OUT}/susie_replsugg_${chr}_${SNP}_${start}_${end}.txt \
     ${PATH_OUT}/susie_replsugg_${chr}_${SNP}_${start}_${end}.jpeg
 
+
 awk -F "\t" '{print $6}' ${PATH_OUT}/susie_replsugg_${chr}_${SNP}_${start}_${end}.txtcredset | \
     tr , '\n' | tail -n +2 > ${PATH_OUT}/susie_replsugg_${chr}_${SNP}_${start}_${end}.credset.indx
 
@@ -125,3 +138,67 @@ Rscript src/finemapping_replicated_suggestive/credset_susie.R \
     /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt \
     ${chr}_${SNP}_${start}_${end} \
     ${PATH_OUT}/susie_replsugg_credset.${SNP}.$chr.$start.$end
+
+#because I did this analysis two times and i wanted to be sure that the second time I wasn't adding the credset twice:
+grep -v "3_rs778801698_49524027_50524027" ${PATH_finemapping}/output/susie_replsugg_all_credset.txt \
+    > ${PATH_finemapping}/output/susie_replsugg_all_credset_rs778801698.txt
+
+tail -n +2 -q ${PATH_OUT}/susie_replsugg_credset.rs778801698.3.49524027.50524027 \
+    >> ${PATH_finemapping}/output/susie_replsugg_all_credset_rs778801698.txt
+
+#Valid credset SNPs:
+##Shared
+Rscript src/finemapping_replicated_suggestive/Valid_shared_credset_variants_replicated_suggestive.R \
+output/susie_replsugg_all_credset_rs778801698.txt output/finemap_replsugg_all_credset_rs778801698.txt output/replsugg_shared_valid_credset_chr3.txt
+
+awk '{print $1}' output/replsugg_shared_valid_credset_chr3.txt | sort | uniq -c
+
+##FINEMAP-ONLY:
+PATH_OUT="/home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/output/"
+awk -v OFS=',' '{print $1, $2, $3, $4, $5, $6}' ${PATH_OUT}/susie_replsugg_all_credset_rs778801698.txt | \
+    grep -v -w -F -f - ${PATH_OUT}/finemap_replsugg_all_credset_rs778801698.txt \
+    > ${PATH_OUT}/finemap_replsugg_only_credset
+
+awk -F "," -v OFS=' ' '{print $2, "0"$3, $4, $5, $6}' ${PATH_OUT}/finemap_replsugg_only_credset | \
+    grep -o -n -w -F -f - /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_no_ma_GWAS_sumstats.txt | \
+    awk -F ":" '{print "V"$1, $2}' > /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_finemap_only_vars_susie_idx
+
+grep -v "3_rs778801698_49524027_50524027" ${PATH_OUT}/repl_sugg_NOTshared_finemaponly_valid_credset.txt \
+    > ${PATH_OUT}/repl_sugg_NOTshared_finemaponly_valid_credset_rs778801698.txt
+mv ${PATH_OUT}/repl_sugg_NOTshared_finemaponly_valid_credset_rs778801698.txt \
+    ${PATH_OUT}/repl_sugg_NOTshared_finemaponly_valid_credset.txt
+
+Rscript src/finemapping_replicated_suggestive/Valid_NOTshared_finemaponly_credset_variants_replicated_suggestive.R \
+    ${PATH_OUT}/finemap_replicated_suggestive/finemap_replsugg_credset_${chr}_${SNP}_${start}_${end}.txt \
+    /scratch/gen1/nnp5/Fine_mapping/tmp_data/${SNP}_finemap_only_vars_susie_idx \
+    ${PATH_OUT}/susie_replicated_suggestive/susie_replsugg_${chr}_${SNP}_${start}_${end}.txt
+#how many valid finemap-only credset SNPs for locus ?
+awk '{print $1}' ${PATH_OUT}/repl_sugg_NOTshared_finemaponly_valid_credset.txt | sort | uniq -c
+
+##SuSiE only:
+awk -F "," -v OFS='\t' '{print $1, $2, $3, $4, $5, $6}' ${PATH_OUT}/finemap_replsugg_all_credset_rs778801698.txt | \
+    grep -v -w -F -f - ${PATH_OUT}/susie_replsugg_all_credset_rs77880169.txt \
+    > ${PATH_OUT}/susie_replsugg_only_credset
+
+
+grep -v "3_rs778801698_49524027_50524027" ${PATH_OUT}/repl_sugg_NOTshared_susieonly_valid_credset.txt \
+    > ${PATH_OUT}/repl_sugg_NOTshared_susieonly_valid_credset_rs778801698.txt
+mv ${PATH_OUT}/repl_sugg_NOTshared_susieonly_valid_credset_rs778801698.txt \
+    ${PATH_OUT}/repl_sugg_NOTshared_susieonly_valid_credset.txt
+
+Rscript src/finemapping_replicated_suggestive/Valid_NOTshared_susieonly_credset_variants_replicated_suggestive.R \
+    ${PATH_OUT}/susie_replsugg_only_credset \
+    ${PATH_OUT}/finemap_replicated_suggestive/finemap_replsugg_${chr}_${SNP}_${start}_${end}.snp
+#how many valid finemap-only credset SNPs for locus ?
+awk '{print $1}' ${PATH_OUT}/repl_sugg_NOTshared_susieonly_valid_credset.txt | sort | uniq -c
+
+
+cat ${PATH_finemapping}/output/replsugg_shared_valid_credset_chr3.txt ${PATH_finemapping}/output/repl_sugg_NOTshared_finemaponly_valid_credset.txt \
+    > ${PATH_finemapping}/output/replsugg_valid_credset.txt.tmp
+cat ${PATH_finemapping}/output/replsugg_valid_credset.txt.tmp ${PATH_finemapping}/output/repl_sugg_NOTshared_susieonly_valid_credset.txt \
+    > ${PATH_finemapping}/output/replsugg_valid_credset_chr3.txt
+rm ${PATH_finemapping}/output/replsugg_valid_credset.txt.tmp
+grep -w -v "6_rs9271365_32086794_33086794" ${PATH_finemapping}/output/replsugg_valid_credset_chr3.txt \
+    > ${PATH_finemapping}/output/replsugg_valid_credset_chr3_noMHC.txt
+
+cp ${PATH_finemapping}/output/replsugg_valid_credset_chr3_noMHC.txt /data/gen1/UKBiobank_500K/severe_asthma/Noemi_PhD/data/
