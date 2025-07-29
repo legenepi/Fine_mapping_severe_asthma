@@ -3,9 +3,9 @@
 #PBS -N bgenix_index
 #PBS -j oe
 #PBS -o bgenix_index
-#PBS -l walltime=36:0:0
+#PBS -l walltime=72:0:0
 #PBS -l vmem=100gb
-#PBS -l nodes=1:ppn=1
+#PBS -l nodes=1:ppn=4
 #PBS -d .
 #PBS -W umask=022
 

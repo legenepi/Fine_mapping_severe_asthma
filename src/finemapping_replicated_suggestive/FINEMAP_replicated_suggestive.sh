@@ -33,39 +33,39 @@ cd ${PATH_finemapping}
 #qsub -t 1-22 ${PATH_finemapping}/src/bgenix_index.sh
 
 ##data.sample:
-#grep -w -F -f /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_individuals \
-#    /data/gen1/UKBiobank_500K/severe_asthma/data/ukbiobank_app56607_for_regenie.sample | awk '{print $1, $2, $3}' \
-#    > ${PATH_finemapping}/input/ldstore.sample.tmp
-#echo "ID_1 ID_2 missing" > ${PATH_finemapping}/input/ldstore_header.sample
-#echo "0 0 0" > ${PATH_finemapping}/input/ldstore_secondline.sample
-#cat ${PATH_finemapping}/input/ldstore_header.sample ${PATH_finemapping}/input/ldstore_secondline.sample | \
-#    cat - ${PATH_finemapping}/input/ldstore.sample.tmp \
-#    > ${PATH_finemapping}/input/ldstore.sample
-#rm ${PATH_finemapping}/input/ldstore.sample.tmp ${PATH_finemapping}/input/ldstore_header.sample \
-#    ${PATH_finemapping}/input/ldstore_secondline.sample
+grep -w -F -f /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_individuals \
+    /data/gen1/UKBiobank_500K/severe_asthma/data/ukbiobank_app56607_for_regenie.sample | awk '{print $1, $2, $3}' \
+    > ${PATH_finemapping}/input/ldstore.sample.tmp
+echo "ID_1 ID_2 missing" > ${PATH_finemapping}/input/ldstore_header.sample
+echo "0 0 0" > ${PATH_finemapping}/input/ldstore_secondline.sample
+cat ${PATH_finemapping}/input/ldstore_header.sample ${PATH_finemapping}/input/ldstore_secondline.sample | \
+    cat - ${PATH_finemapping}/input/ldstore.sample.tmp \
+    > ${PATH_finemapping}/input/ldstore.sample
+rm ${PATH_finemapping}/input/ldstore.sample.tmp ${PATH_finemapping}/input/ldstore_header.sample \
+    ${PATH_finemapping}/input/ldstore_secondline.sample
 
 ##sevasthma.z: space-delimited text file
 #rsid chromosome position allele1 allele2 maf beta se
-#awk '{print $1, $2, $3, $5, $4, $12, $6, $7}' \
-#    ${PATH_finemapping}/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat |
-#    awk '
-#    {if($2==1) $2 = "01"
-#     if($2==2) $2 = "02"
-#     if($2==3) $2 = "03"
-#     if($2==4) $2 = "04"
-#     if($2==5) $2 = "05"
-#     if($2==6) $2 = "06"
-#     if($2==7) $2 = "07"
-#     if($2==8) $2 = "08"
-#     if($2==9) $2 = "09"
-#     }
-#     1' | \
-#    sed "1s/.*/rsid chromosome position allele1 allele2 maf beta se/" \
-#    > ${PATH_finemapping}/input/sevasthma.z
+awk '{print $1, $2, $3, $5, $4, $12, $6, $7}' \
+    ${PATH_finemapping}/input/maf001_broad_pheno_1_5_ratio_betase_input_mungestat |
+    awk '
+    {if($2==1) $2 = "01"
+     if($2==2) $2 = "02"
+     if($2==3) $2 = "03"
+     if($2==4) $2 = "04"
+     if($2==5) $2 = "05"
+     if($2==6) $2 = "06"
+     if($2==7) $2 = "07"
+     if($2==8) $2 = "08"
+     if($2==9) $2 = "09"
+     }
+     1' | \
+    sed "1s/.*/rsid chromosome position allele1 allele2 maf beta se/" \
+    > ${PATH_finemapping}/input/sevasthma.z
 
 ##dataset.incl:
-#awk {'print $1'} /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_individuals | tail -n +2 \
-#    > ${PATH_finemapping}/input/ldstore.incl
+awk {'print $1'} /home/n/nnp5/PhD/PhD_project/Post_GWAS/input/broadasthma_individuals | tail -n +2 \
+    > ${PATH_finemapping}/input/ldstore.incl
 
 ##SEVASTHMA.BCOR: as output from LDstore2 BCOR v1.1
 #Need to be created with LDSTORE2:

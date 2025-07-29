@@ -103,15 +103,16 @@ python /home/n/nnp5/software/polyfun/polyfun.py \
 #    --read-only-bgen \
 #    --rsids /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/input/rsid_maf001_broad_pheno_1_5_ratio_betase_input_mungestat
 
-#cd /home/n/nnp5/software/polyfun
-#conda activate polyfun
-#module load python/gcc/3.9.10
-#python compute_ldscores_from_ld.py \
-#  --annot /scratch/gen1/nnp5/Fine_mapping/tmp_data/baselineLF2.2.UKB/baselineLF2.2.UKB.3.annot.parquet \
-#  --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/ldscores_SA_EUR_maf001_chr3.parquet \
-#  --n 46086 \
-#  bcor_files/*.bcor
-#conda deactivate
+cd /home/n/nnp5/software/polyfun
+conda activate polyfun
+module load python/gcc/3.9.10
+python compute_ldscores_from_ld.py \
+  --annot /scratch/gen1/nnp5/Fine_mapping/tmp_data/baselineLF2.2.UKB/baselineLF2.2.UKB.3.annot.parquet \
+  --out /scratch/gen1/nnp5/Fine_mapping/tmp_data/ldscores_SA_EUR_maf001_chr3.parquet \
+  --n 46086 \
+  /home/n/nnp5/PhD/PhD_project/Fine_mapping_severe_asthma/input/ldstore_chr3_rs778801698.bcor
+conda deactivate
+
 
 
 
